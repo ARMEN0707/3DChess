@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Rock : Chess
 {
-    public int n = 1;
-
-    public override void GetPointForMove()
+    public override List<(int, int)> GetPointForMove(int x, int y)
     {
         Debug.Log("Rock");
+        return null;
     }
 
     // Start is called before the first frame update
@@ -20,6 +19,6 @@ public class Rock : Chess
     // Update is called once per frame
     void Update()
     {
-        
+        MoveChess(point);
     }
 }

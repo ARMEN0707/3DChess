@@ -4,18 +4,42 @@ using UnityEngine;
 
 public abstract class Chess : MonoBehaviour
 {
+    [Header ("Set in inspector")]
+    public float speed = 1.0f;   
     public bool isWhite;
 
-    public void MoveChess()
-    {
+    [Header("Set Dynamic")]
+    public bool isMove;
+    public Vector3 point;
+    public int currentX;
+    public int currentY;
+    //для направления движения
+    public int n;
 
+    public abstract List<(int, int)> GetPointForMove(int x, int y);
+
+    public void MoveChess(Vector3 position)
+    {
+        if (isMove)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
+            if(transform.position == position)
+            {
+                isMove = false;
+                ChessBoard.isMoveChess = false;
+            }
+        }
     }
 
-    public abstract void GetPointForMove();
+    //private void OnTriggerEntry(Collision collision)
     //{
-    //    Debug.Log("Chess");
-   // }
+    //    Debug.Log("asd");
+    //    if(!isMove && collision.gameObject.layer == LayerMask.NameToLayer("Chess"))
+    //    {
+    //        Destroy(collision.gameObject);
+    //    }
+    //}
 
 
-    
+
 }

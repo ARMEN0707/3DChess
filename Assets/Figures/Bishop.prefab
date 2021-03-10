@@ -139,3 +139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a73e93702d038b48b75b247efe50786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
+  isWhite: 1
+  isMove: 0
+  point: {x: 0, y: 0, z: 0}
+  currentX: 0
+  currentY: 0
+  n: 0

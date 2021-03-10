@@ -5,9 +5,10 @@ using UnityEngine;
 public class Queen : Chess
 {
 
-    public override void GetPointForMove()
+    public override List<(int, int)> GetPointForMove(int x, int y)
     {
         Debug.Log("Queen");
+        return null;
     }
 
     // Start is called before the first frame update
@@ -19,6 +20,6 @@ public class Queen : Chess
     // Update is called once per frame
     void Update()
     {
-        
+        MoveChess(point);
     }
 }

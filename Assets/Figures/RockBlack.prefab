@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8539227895136393351}
   - component: {fileID: 8306824135607491135}
   - component: {fileID: 7343058988107724100}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TrnModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 6830154647405105709}
   - component: {fileID: 7629947305748393919}
   - component: {fileID: 3340326273170487148}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RockBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,5 +139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcfc095b955fa9d498b1f1caac5cda35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
   isWhite: 0
+  isMove: 0
+  point: {x: 0, y: 0, z: 0}
+  currentX: 0
+  currentY: 0
   n: 1

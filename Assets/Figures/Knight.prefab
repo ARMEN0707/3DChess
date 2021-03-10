@@ -59,6 +59,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e0a4af98ede2d4f800147cc9fd2251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
+  isWhite: 1
+  isMove: 0
+  point: {x: 0, y: 0, z: 0}
+  currentX: 0
+  currentY: 0
+  n: 0
 --- !u!1 &4697519407554143209
 GameObject:
   m_ObjectHideFlags: 0
