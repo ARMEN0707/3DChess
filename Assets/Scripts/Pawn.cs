@@ -10,47 +10,51 @@ public class Pawn : Chess
     public override List<(int,int)> GetPointForMove(int x, int y)
     {
         List<(int,int)> points = new List<(int,int)>();
+        
+        //перемещение
         if(isFirstMove)
         {
-            for(int i = 1; i <= 2; i++)
+            for(int j = 1; j <= 2; j++)
             {
-                if (ChessBoard.chessInBoard.Find(chess => chess.currentX == x && chess.currentY == (y + i * n)) == null)
-                {
-                    points.Add((x, y + i * n));
-                }else
-                {
-                    break;
-                }                
+                GetPointForMove(points, x, y, 0, j);                
             }
         }else
         {
-            if (ChessBoard.chessInBoard.Find(chess => chess.currentX == x && chess.currentY == (y + 1 * n)) == null)
-            {
-                points.Add((x, y + 1 * n));
-            }
-            if(ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + 1 * n) && chess.currentY == (y + 1 * n)) != null)
-            {
-                points.Add((x + 1 * n, y + 1 * n));
-            }
-            if (ChessBoard.chessInBoard.Find(chess => chess.currentX == (x - 1 * n) && chess.currentY == (y + 1 * n)) != null)
-            {
-                points.Add((x - 1 * n, y + 1 * n));
-            }
+            GetPointForMove(points, x, y, 0, 1);
         }
 
+        //атака
+        GetPointForAttack(points, x, y, 1, 1);
+        GetPointForAttack(points, x, y, -1, 1);
+
         return points;
+    }
+
+    private void GetPointForMove(List<(int,int)> points,int x,int y, int i,int j)
+    {
+        Chess chess = FindChess(x, y, i, j);
+        if (chess == null)
+        {
+            points.Add((x + i * n, y + j * n));
+        }        
+    }
+
+    private void GetPointForAttack(List<(int, int)> points, int x, int y, int i, int j)
+    {
+        Chess chess = FindChess(x, y, i, j);
+        if (chess != null)
+        {
+            if (isWhite != chess.isWhite)
+            {
+                points.Add((x + i * n, y + j * n));
+            }
+        }        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if(isWhite)
-        {
-            n = 1;
-        }else
-        {
-            n = -1;
-        }
+        SetDir();
     }
 
     // Update is called once per frame

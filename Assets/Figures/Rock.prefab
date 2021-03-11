@@ -145,4 +145,4 @@ MonoBehaviour:
   point: {x: 0, y: 0, z: 0}
   currentX: 0
   currentY: 0
-  n: 1
+  n: 0

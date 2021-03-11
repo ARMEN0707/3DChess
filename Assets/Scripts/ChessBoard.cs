@@ -20,7 +20,8 @@ public class ChessBoard : MonoBehaviour
 
     private void SpawnChess(int index, int x, int y)
     {
-        GameObject go = Instantiate(listChessPrefabs[index], GetPosition(x, y), Quaternion.identity);
+        GameObject go = listChessPrefabs[index];
+        go = Instantiate(go, GetPosition(x, y),go.transform.rotation);
         go.transform.SetParent(transform);
         go.name = go.name.Replace("(Clone)", "");
         Chess chessScript = go.GetComponent<Chess>();

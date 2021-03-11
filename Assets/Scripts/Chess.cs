@@ -18,6 +18,24 @@ public abstract class Chess : MonoBehaviour
 
     public abstract List<(int, int)> GetPointForMove(int x, int y);
 
+    public Chess FindChess(int x, int y, int i, int j) => 
+        ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + i * n) && chess.currentY == (y + j * n));
+
+    public bool PointInBoard(int x, int y, int i, int j) => 
+        (((x + i * n) >= 0 && (x + i * n) <= 7) && ((y + j * n) >= 0 && (y + j * n) <= 7));
+
+    public void SetDir()
+    {
+        if (isWhite)
+        {
+            n = 1;
+        }
+        else
+        {
+            n = -1;
+        }
+    }
+
     public void MoveChess(Vector3 position)
     {
         if (isMove)
