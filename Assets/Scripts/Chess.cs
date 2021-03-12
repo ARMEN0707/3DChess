@@ -8,6 +8,7 @@ public abstract class Chess : MonoBehaviour
     public float speed = 1.0f;   
     public bool isWhite;
 
+
     [Header("Set Dynamic")]
     public bool isMove;
     public Vector3 point;
@@ -18,9 +19,11 @@ public abstract class Chess : MonoBehaviour
 
     public abstract List<(int, int)> GetPointForMove(int x, int y);
 
+    //проверяет наличие фигуры на данной клетке
     public Chess FindChess(int x, int y, int i, int j) => 
         ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + i * n) && chess.currentY == (y + j * n));
 
+    //находится ли точка на доске
     public bool PointInBoard(int x, int y, int i, int j) => 
         (((x + i * n) >= 0 && (x + i * n) <= 7) && ((y + j * n) >= 0 && (y + j * n) <= 7));
 
@@ -48,6 +51,7 @@ public abstract class Chess : MonoBehaviour
             }
         }
     }
+       
 
     //private void OnTriggerEntry(Collision collision)
     //{

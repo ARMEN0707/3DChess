@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1056655971
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056655972}
+  m_Layer: 0
+  m_Name: PlaceForDeadChessWhite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1056655972
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056655971}
+  m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: -13.6, y: 0, z: 8.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 745226584065892764}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1326350979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1326350980}
+  m_Layer: 0
+  m_Name: PlaceForDeadChessBlack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1326350980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326350979}
+  m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: 14.1, y: 0, z: -8.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 745226584065892764}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &80012619298945830
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,7 +70,8 @@ GameObject:
   m_Component:
   - component: {fileID: 745226584065892764}
   - component: {fileID: 3442491690469690406}
-  m_Layer: 0
+  - component: {fileID: 3442491690469690407}
+  m_Layer: 9
   m_Name: ChessBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33,6 +94,8 @@ Transform:
   - {fileID: 7285308423511848475}
   - {fileID: 3204554783135276105}
   - {fileID: 5795615312384843594}
+  - {fileID: 1326350980}
+  - {fileID: 1056655972}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -48,7 +111,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d0354fd1fca3544b2b581db86654d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPosition: {x: 1, y: 1, z: 1}
+  CellForMove: {fileID: 5175055502859525678, guid: 965c0d45997025a4ead94a8e2b17f69c, type: 3}
+  startPosition: {x: 0, y: 0, z: 0}
+  cellSize: 2.36
   listChessPrefabs:
   - {fileID: 5980606869229091187, guid: a92509f6848a37e46be9d8bddd15663f, type: 3}
   - {fileID: 4881893638047270123, guid: 01e612e004df7cd43a57ae807ad15f21, type: 3}
@@ -62,7 +127,93 @@ MonoBehaviour:
   - {fileID: 8299305276952245109, guid: aa071fd05fb616e449b01994bfafc432, type: 3}
   - {fileID: 9124354471098416030, guid: 15e0a72207c571740a5579f4c92d367c, type: 3}
   - {fileID: 3111324872034989673, guid: ec6cb1ded0b7ae74b95bc560bc2d1338, type: 3}
-  cellSize: 2.36
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.009021975
+      value: -0.001961112
+      inSlope: 0.7079223
+      outSlope: 0.7079223
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.6185211
+    - serializedVersion: 3
+      time: 0.13713491
+      value: 0.23161353
+      inSlope: 0.69448876
+      outSlope: 0.69448876
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.63758576
+      outWeight: 0.26540792
+    - serializedVersion: 3
+      time: 0.38099685
+      value: 0.39762768
+      inSlope: 0.374029
+      outSlope: 0.374029
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.73664385
+    - serializedVersion: 3
+      time: 0.6955649
+      value: 0.49570638
+      inSlope: 0.008242098
+      outSlope: 0.008242098
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.53499895
+      outWeight: 0.78249425
+    - serializedVersion: 3
+      time: 1.1713828
+      value: 0.36487865
+      inSlope: -0.3775966
+      outSlope: -0.3775966
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.61886406
+    - serializedVersion: 3
+      time: 1.7005802
+      value: 0.16175881
+      inSlope: -0.43484843
+      outSlope: -0.43484843
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.9049267
+    - serializedVersion: 3
+      time: 2.0017605
+      value: 0.00048401207
+      inSlope: -1.0005424
+      outSlope: -1.0005424
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.24137588
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PlaceDeadChessBlack: {fileID: 1326350979}
+  PlaceDeadChessWhite: {fileID: 1056655971}
+  activeChess: {fileID: 0}
+  halfSizeBoard: 0
+  isWhitePlayer: 1
+--- !u!65 &3442491690469690407
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80012619298945830}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 19.045998, y: 0.52072144, z: 19.13224}
+  m_Center: {x: 0.04317665, y: -0.32421875, z: 0.08634949}
 --- !u!1 &1161225694327480972
 GameObject:
   m_ObjectHideFlags: 0
