@@ -7,6 +7,8 @@ public class PlayerCamera : MonoBehaviour
     [Header ("Set in inspector")]
     public GameObject whitePlayerCamera;
     public GameObject blackPlayerCamera;
+    private Vector3 startRotationWhitePlayerCamera;
+    private Vector3 startRotationBlackPlayerCamera;
 
     [Header("Set Dynamic")]
     public static bool isWait = false;
@@ -14,6 +16,8 @@ public class PlayerCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        startRotationWhitePlayerCamera = whitePlayerCamera.transform.localEulerAngles;
+        startRotationBlackPlayerCamera = blackPlayerCamera.transform.localEulerAngles;
         whitePlayerCamera.SetActive(true);
         blackPlayerCamera.SetActive(false);
     }
@@ -22,6 +26,8 @@ public class PlayerCamera : MonoBehaviour
     {
         whitePlayerCamera.SetActive(!whitePlayerCamera.activeInHierarchy);
         blackPlayerCamera.SetActive(!blackPlayerCamera.activeInHierarchy);
+        whitePlayerCamera.transform.localEulerAngles = startRotationWhitePlayerCamera;
+        blackPlayerCamera.transform.localEulerAngles = startRotationBlackPlayerCamera;
     }
 
     private IEnumerator Wait()
@@ -49,7 +55,6 @@ public class PlayerCamera : MonoBehaviour
         {
             isWait = true;
             StartCoroutine(Wait());
-
         }
     }
 

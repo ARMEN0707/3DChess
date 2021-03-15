@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Bishop : Chess
 {
-    public override List<(int, int)> GetPointForMove(int x, int y)
+    public override List<Cell> GetPointForMove(int x, int y)
     {
-        List<(int, int)> points = new List<(int, int)>();
+        List<Cell> points = new List<Cell>();
 
         //право вверх
         GetPointInDirDiagonal(points, x, y, 1, 1);
@@ -21,22 +21,22 @@ public class Bishop : Chess
         return points;
     }
 
-    private void GetPointInDirDiagonal(List<(int,int)> points, int x, int y, int a,int b)
+    private void GetPointInDirDiagonal(List<Cell> points, int x, int y, int offsetX,int offsetY)
     {
         for (int i = 1; ; i++)
         {
-            if (PointInBoard(x, y, i * a, i * b))
+            if (PointInBoard(x, y, i * offsetX, i * offsetY))
             {
-                Chess chess = FindChess(x, y, i * a, i * b);
+                Chess chess = FindChess(x, y, i * offsetX, i * offsetY);
                 if (chess == null)
                 {
-                    points.Add((x + i * n * a, y + i * n * b));
+                    points.Add(new Cell(x + i * dir * offsetX, y + i * dir * offsetY, true));
                 }
                 else
                 {
                     if (isWhite != chess.isWhite)
                     {
-                        points.Add((x + i * n * a, y + i * n * b));
+                        points.Add(new Cell(x + i * dir * offsetX, y + i * dir * offsetY, false));
                     }
                     break;
                 }

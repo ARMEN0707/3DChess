@@ -6,6 +6,8 @@ public class ChessBoard : MonoBehaviour
 {
     [Header("Set in Inspector")]
     public GameObject CellForMove;
+    public GameObject CellForAttack;
+    public GameObject SelectedCell;
     public Vector3 startPosition;
     public float cellSize;
     public List<GameObject> listChessPrefabs;
@@ -109,21 +111,34 @@ public class ChessBoard : MonoBehaviour
     }
 
     //рисует на доске все возможные ходы
-    private void DrawCellForMove(List<(int,int)> points)
+    private void DrawCellForMove(List<Cell> points)
     {
         if (points == null)
             return;
-        ClearCellForMove();
-        foreach((int,int) p in points)
+        GameObject go;
+        ClearCell();
+        foreach (Cell p in points)
         {
-            GameObject go = Instantiate(CellForMove, GetPosition(p.Item1, p.Item2), Quaternion.identity);
+            if (p.isCellForMove)
+            {
+                go = Instantiate(CellForMove, GetPosition(p.x, p.y), Quaternion.identity);
+            }else
+            {
+                go = Instantiate(CellForAttack, GetPosition(p.x, p.y), Quaternion.identity);
+            }
             go.transform.SetParent(transform);
             go.name = go.name.Replace("(Clone)", "");
         }
     }
-    private void ClearCellForMove()
+    private void DrawSelectedCell(int x,int y)
     {
-        GameObject[] items = GameObject.FindGameObjectsWithTag("CellMove");
+        GameObject go = Instantiate(SelectedCell, GetPosition(x, y), Quaternion.identity);
+        go.transform.SetParent(transform);
+        go.name = go.name.Replace("(Clone)", "");
+    }
+    private void ClearCell()
+    {
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Cell");
         foreach(GameObject i in items)
         {
             Destroy(i);
@@ -211,6 +226,7 @@ public class ChessBoard : MonoBehaviour
                 int x, y;
                 GetIndexCell(chess.transform.position, out x, out y);
                 DrawCellForMove(chessScript.GetPointForMove(x, y));
+                DrawSelectedCell(x, y);
                 activeChess = chess;
             }
         }
@@ -223,20 +239,25 @@ public class ChessBoard : MonoBehaviour
             {
                 int x, y;                    
                 Chess chessScript = activeChess.GetComponent<Chess>();
+                GameObject goHit = hit.collider.gameObject;
                 GetIndexCell(activeChess.transform.position, out x, out y);
-                List<(int,int)> points = chessScript.GetPointForMove(x,y);
+                List<Cell> points = chessScript.GetPointForMove(x,y);
                 if (points == null)
                     return;
                 GetIndexCell(hit.point, out x, out y);                    
-                if (points.Contains((x,y)))
+                if (points.Exists(p => p.x == x && p.y == y))
                 { 
-                    if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Chess"))
+                    if(goHit.layer == LayerMask.NameToLayer("Chess"))
                     {
                         //Destroy(hit.collider.gameObject,1.0f); 
-                        Chess chessDead = hit.collider.gameObject.GetComponent<Chess>();
+                        Chess chessDead = goHit.GetComponent<Chess>();
                         chessInBoard.Remove(chessDead);
                         hit.collider.enabled = false;
-                        StartCoroutine(ClearChess(hit.collider.gameObject));
+                        if(goHit.tag == "King")
+                        {
+                            Debug.Log("End");
+                        }
+                        StartCoroutine(ClearChess(goHit));
                     }
                     chessScript.point = GetPosition(x, y); ;
                     chessScript.isMove = true;
@@ -245,7 +266,7 @@ public class ChessBoard : MonoBehaviour
                     isMoveChess = true;
                     isWhitePlayer = !isWhitePlayer;
                     activeChess = null;
-                    ClearCellForMove();
+                    ClearCell();
                 }                    
             }           
         }

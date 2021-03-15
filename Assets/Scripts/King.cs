@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class King : Chess
 {
-    public override List<(int, int)> GetPointForMove(int x, int y)
+    public override List<Cell> GetPointForMove(int x, int y)
     {
-        List<(int, int)> points = new List<(int, int)>();
+        List<Cell> points = new List<Cell>();
 
         GetPoint(points,x,y,0,1);
         GetPoint(points,x,y,1,1);
@@ -21,26 +21,32 @@ public class King : Chess
         return points;
     }
 
-    private void GetPoint(List<(int, int)> points, int x, int y,int a,int b)
+    private void GetPoint(List<Cell> points, int x, int y,int offsetX,int offsetY)
     {
-        if (PointInBoard(x, y, a, b))
+        if (PointInBoard(x, y, offsetX, offsetY))
         {
-            Chess chess = FindChess(x, y, a, b);
+            Chess chess = FindChess(x, y, offsetX, offsetY);
             if (chess == null)
             {
-                points.Add((x + n * a, y + n * b));
+                points.Add(new Cell(x + dir * offsetX, y + dir * offsetY, true));
             }
             else
             {
                 if(isWhite != chess.isWhite)
                 {
-                    points.Add((x + n * a, y + n * b));
+                    points.Add(new Cell(x + dir * offsetX, y + dir * offsetY, false));
                 }
             }
 
         }
         
     }
+
+    //public bool checkmate()
+    //{
+        
+    //    return false;
+    //}
 
     // Start is called before the first frame update
     void Start()
@@ -52,5 +58,12 @@ public class King : Chess
     void Update()
     {
         MoveChess(point);
+        //if(ChessBoard.isMoveChess)
+        //{
+        //    if(checkmate())
+        //    {
+        //        Debug.Log("Checkmate");
+        //    }
+        //}
     }
 }

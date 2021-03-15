@@ -6,8 +6,8 @@ public class CameraRotateAround : MonoBehaviour {
 
 	public Transform target;
 	public Vector3 offset;
+    public int limit;
 	public float sensitivity; 
-	public float limit = 80; 
 	public float zoom; 
 	public float zoomMax; 
 	public float zoomMin; 
@@ -27,11 +27,10 @@ public class CameraRotateAround : MonoBehaviour {
 
         if (Input.GetMouseButton(1))
         {          
-            x = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivity;
-            y += Input.GetAxis("Mouse Y") * sensitivity;
-            y = Mathf.Clamp(y, -limit, limit);
-            transform.localEulerAngles = new Vector3(-y, x, 0);
-            
+            y = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * sensitivity;
+            x = transform.localEulerAngles.x + Input.GetAxis("Mouse Y") * sensitivity;
+            x = Mathf.Clamp(x, 30, 75);
+            transform.localEulerAngles = new Vector3(x, y, 0);            
         }
         transform.position = transform.localRotation * offset + target.position;
     }

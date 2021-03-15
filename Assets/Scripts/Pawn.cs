@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Pawn : Chess
 {
-    private bool isFirstMove = true;
-    
+    private bool isFirstMove = true;    
 
-    public override List<(int,int)> GetPointForMove(int x, int y)
+    public override List<Cell> GetPointForMove(int x, int y)
     {
-        List<(int,int)> points = new List<(int,int)>();
+        List<Cell> points = new List<Cell>();
         
         //перемещение
         if(isFirstMove)
@@ -30,23 +29,23 @@ public class Pawn : Chess
         return points;
     }
 
-    private void GetPointForMove(List<(int,int)> points,int x,int y, int i,int j)
+    private void GetPointForMove(List<Cell> points,int x,int y, int offsetX,int offsetY)
     {
-        Chess chess = FindChess(x, y, i, j);
+        Chess chess = FindChess(x, y, offsetX, offsetY);
         if (chess == null)
         {
-            points.Add((x + i * n, y + j * n));
+            points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, true));
         }        
     }
 
-    private void GetPointForAttack(List<(int, int)> points, int x, int y, int i, int j)
+    private void GetPointForAttack(List<Cell> points, int x, int y, int offsetX, int offsetY)
     {
-        Chess chess = FindChess(x, y, i, j);
+        Chess chess = FindChess(x, y, offsetX, offsetY);
         if (chess != null)
         {
             if (isWhite != chess.isWhite)
             {
-                points.Add((x + i * n, y + j * n));
+                points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, false));
             }
         }        
     }

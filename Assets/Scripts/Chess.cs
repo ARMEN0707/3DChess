@@ -2,6 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct Cell
+{
+    public int x;
+    public int y;
+    public bool isCellForMove;
+
+    public Cell(int x,int y,bool isCellForMove)
+    {
+        this.x = x;
+        this.y = y;
+        this.isCellForMove = isCellForMove;
+    }
+}
+
 public abstract class Chess : MonoBehaviour
 {
     [Header ("Set in inspector")]
@@ -15,27 +29,27 @@ public abstract class Chess : MonoBehaviour
     public int currentX;
     public int currentY;
     //для направления движения
-    public int n;
+    public int dir;
 
-    public abstract List<(int, int)> GetPointForMove(int x, int y);
+    public abstract List<Cell> GetPointForMove(int x, int y);
 
     //проверяет наличие фигуры на данной клетке
-    public Chess FindChess(int x, int y, int i, int j) => 
-        ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + i * n) && chess.currentY == (y + j * n));
+    public Chess FindChess(int x, int y, int offsetX, int offsetY) => 
+        ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + offsetX * dir) && chess.currentY == (y + offsetY * dir));
 
     //находится ли точка на доске
-    public bool PointInBoard(int x, int y, int i, int j) => 
-        (((x + i * n) >= 0 && (x + i * n) <= 7) && ((y + j * n) >= 0 && (y + j * n) <= 7));
+    public bool PointInBoard(int x, int y, int offsetX, int offsetY) => 
+        (((x + offsetX * dir) >= 0 && (x + offsetX * dir) <= 7) && ((y + offsetY * dir) >= 0 && (y + offsetY * dir) <= 7));
 
     public void SetDir()
     {
         if (isWhite)
         {
-            n = 1;
+            dir = 1;
         }
         else
         {
-            n = -1;
+            dir = -1;
         }
     }
 
@@ -51,17 +65,4 @@ public abstract class Chess : MonoBehaviour
             }
         }
     }
-       
-
-    //private void OnTriggerEntry(Collision collision)
-    //{
-    //    Debug.Log("asd");
-    //    if(!isMove && collision.gameObject.layer == LayerMask.NameToLayer("Chess"))
-    //    {
-    //        Destroy(collision.gameObject);
-    //    }
-    //}
-
-
-
 }

@@ -4,47 +4,59 @@ using UnityEngine;
 
 public class Knight : Chess
 {
-    public override List<(int, int)> GetPointForMove(int x, int y)
+    public override List<Cell> GetPointForMove(int x, int y)
     {
-        List<(int, int)> points = new List<(int, int)>();
+        List<Cell> points = new List<Cell>();
 
         //горизонталь
-        int a = 2 , b = 1;
+        int offsetX = 2 , offsetY = 1;
         Chess chess;
-        for (int i = 1; i <= 4; i++,b = -b)
+        for (int i = 1; i <= 4; i++,offsetY = -offsetY)
         {            
-            if(PointInBoard(x,y,a,b))
+            if(PointInBoard(x,y,offsetX,offsetY))
             {
-                chess = FindChess(x, y, a, b);
+                chess = FindChess(x, y, offsetX, offsetY);
                 if(chess == null)
                 {
-                    points.Add((x + a * n, y + b * n));
+                    points.Add(new Cell(x + offsetX * dir, y + offsetY * dir,true));
                 }else
                 {
                     if(isWhite != chess.isWhite)
                     {
-                        points.Add((x + a * n, y + b * n));
+                        points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, false));
                     }
                 }
                 
             }            
             if(i == 2)
             {
-                a = -a;
+                offsetX = -offsetX;
             }
         }
 
         //вертикаль
-        a = 1; b = 2;
-        for (int i = 1; i <= 4; i++, a = -a)
+        offsetX = 1; offsetY = 2;
+        for (int i = 1; i <= 4; i++, offsetX = -offsetX)
         {
-            if (PointInBoard(x, y, a, b))
+            if (PointInBoard(x, y, offsetX, offsetY))
             {
-                points.Add((x + a * n, y + b * n));
+                chess = FindChess(x, y, offsetX, offsetY);
+                if (chess == null)
+                {
+                    points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, true));
+                }
+                else
+                {
+                    if (isWhite != chess.isWhite)
+                    {
+                        points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, false));
+                    }
+                }
+
             }
             if (i == 2)
             {
-                b = -b;
+                offsetY = -offsetY;
             }
         }
         Debug.Log("Knight");

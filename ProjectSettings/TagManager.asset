@@ -4,7 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - CellMove
+  - Rock
+  - Queen
+  - Pawn
+  - King
+  - Bishop
+  - Khight
+  - Cell
   layers:
   - Default
   - TransparentFX
