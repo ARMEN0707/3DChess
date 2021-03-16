@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
 public class ChessBoard : MonoBehaviour
 {
     [Header("Set in Inspector")]
@@ -14,15 +17,18 @@ public class ChessBoard : MonoBehaviour
     public AnimationCurve curve;
     public GameObject PlaceDeadChessBlack;
     public GameObject PlaceDeadChessWhite;
+    public AudioSource soundChess;
 
     [Header ("Set Dynamic")]
     public GameObject activeChess = null;
     public static bool isMoveChess = false;
     public float halfSizeBoard;
-    public static List<Chess> chessInBoard = new List<Chess>();
+    public static List<Chess> chessOnBoard;
     public bool isWhitePlayer = true;
     public int numberInactiveBlack = 0;
     public int numberInactiveWhite = 0;
+    public delegate void ReplaceChess();
+    public static event ReplaceChess eventReplaceChess;
 
     private RaycastHit hit;
 
@@ -35,7 +41,7 @@ public class ChessBoard : MonoBehaviour
         Chess chessScript = go.GetComponent<Chess>();
         chessScript.currentX = x;
         chessScript.currentY = y;
-        chessInBoard.Add(chessScript);
+        chessOnBoard.Add(chessScript);
     }
 
     private Vector3 GetPosition(int indexCellX,int indexCellY)
@@ -51,7 +57,7 @@ public class ChessBoard : MonoBehaviour
         indexCellX = Mathf.Abs(indexCellX);
         indexCellY = (int)((point.z - halfSizeBoard) / cellSize);
         indexCellY = Mathf.Abs(indexCellY);
-        Debug.Log((indexCellX, indexCellY));
+        //Debug.Log((indexCellX, indexCellY));
     }
 
     private void SpawnAllChess()
@@ -145,7 +151,20 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
-    public IEnumerator ClearChess(GameObject go)
+    private bool CheckLastLine(Chess chessScript,int y)
+    {
+        if(chessScript.isWhite && y == 7)
+        {
+            return true;
+        }
+        if(!chessScript.isWhite && y == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private IEnumerator ClearChess(GameObject go)
     {
         float currentTime = 0;
         float timeCurve = curve[curve.keys.Length - 1].time;
@@ -207,6 +226,56 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
+    private IEnumerator EndMoveChess(bool isLastLine)
+    {
+        while (true)
+        {
+            if (isMoveChess)
+            {
+                yield return null;
+            }
+            else
+            {
+                soundChess.Play();
+                if (activeChess.tag == "Pawn" && isLastLine)
+                {
+                    eventReplaceChess.Invoke();
+                }else
+                {
+                    activeChess = null;
+                }
+                yield break;
+            }
+        }
+    }
+
+    public void ReplacePawn(string name)
+    {
+        Chess chessScript = activeChess.GetComponent<Chess>();     
+        string color = "";
+        if(!chessScript.isWhite)
+        {
+            color = "Black";
+        }
+        GameObject prefab = listChessPrefabs.Find(chess => chess.tag == (name + color));
+        Destroy(activeChess);
+        GameObject go = Instantiate(prefab, GetPosition(chessScript.currentX, chessScript.currentY), Quaternion.identity);
+        go.transform.SetParent(transform);
+        go.name = go.name.Replace("(Clone)", "");
+        Chess newChessScript = go.GetComponent<Chess>();
+        newChessScript.currentX = chessScript.currentX;
+        newChessScript.currentY = chessScript.currentY;
+        eventReplaceChess.Invoke();
+        activeChess = null;
+    }
+
+    private void Awake()
+    {
+        isMoveChess = false;
+        chessOnBoard = new List<Chess>();
+        eventReplaceChess = null;
+    }
+
     void Start()
     {
         halfSizeBoard = -4 * cellSize;
@@ -218,7 +287,7 @@ public class ChessBoard : MonoBehaviour
     {
         GameObject chess = DetectionChess();
         //выбор объекта
-        if(chess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait)
+        if(chess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait && !UIManager.isPause)
         {           
             Chess chessScript = chess.GetComponent<Chess>();
             if(isWhitePlayer == chessScript.isWhite)
@@ -247,11 +316,12 @@ public class ChessBoard : MonoBehaviour
                 GetIndexCell(hit.point, out x, out y);                    
                 if (points.Exists(p => p.x == x && p.y == y))
                 { 
+                    //если на данной клетке есть чужая шахмата
                     if(goHit.layer == LayerMask.NameToLayer("Chess"))
                     {
                         //Destroy(hit.collider.gameObject,1.0f); 
                         Chess chessDead = goHit.GetComponent<Chess>();
-                        chessInBoard.Remove(chessDead);
+                        chessOnBoard.Remove(chessDead);
                         hit.collider.enabled = false;
                         if(goHit.tag == "King")
                         {
@@ -259,13 +329,13 @@ public class ChessBoard : MonoBehaviour
                         }
                         StartCoroutine(ClearChess(goHit));
                     }
+                    StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y)));                    
                     chessScript.point = GetPosition(x, y); ;
                     chessScript.isMove = true;
                     chessScript.currentX = x;
                     chessScript.currentY = y;
                     isMoveChess = true;
-                    isWhitePlayer = !isWhitePlayer;
-                    activeChess = null;
+                    isWhitePlayer = !isWhitePlayer;                   
                     ClearCell();
                 }                    
             }           

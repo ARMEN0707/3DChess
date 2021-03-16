@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class MusicManager : MonoBehaviour
 {
-    public float voluemSound;
-    public float voluemMusic;
+    public static float voluemSound = 1.0f;
+    public static float voluemMusic = 1.0f;
     public AudioSource sound;
     public AudioSource music;
     public Slider sliderSound;
@@ -27,11 +27,6 @@ public class MusicManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        voluemSound = 1.0f;
-        voluemMusic = 1.0f;
-        sound = GameObject.Find("Sound")?.GetComponent<AudioSource>();
-        music = GameObject.Find("Music").GetComponent<AudioSource>();
-
         if(sound != null)
             sound.volume = voluemSound;
         

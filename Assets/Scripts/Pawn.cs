@@ -34,7 +34,10 @@ public class Pawn : Chess
         Chess chess = FindChess(x, y, offsetX, offsetY);
         if (chess == null)
         {
-            points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, true));
+            if (PointInBoard(x, y, offsetX, offsetY))
+            {
+                points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, true));
+            }
         }        
     }
 

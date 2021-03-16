@@ -7,6 +7,17 @@ public class UIManager : MonoBehaviour
 {
     public GameObject mainMenu;
     public GameObject settingMenu;
+    public GameObject pauseMenu;
+    public GameObject replaceChessMenu;
+
+    public static bool isPause;
+
+    private void Awake()
+    {
+        isPause = false;
+        ChessBoard.eventReplaceChess += ReplaceChessMenu; 
+    }
+
 
     public void StartGame()
     {
@@ -15,8 +26,8 @@ public class UIManager : MonoBehaviour
 
     public void SettingMenu()
     {
-        mainMenu.SetActive(false);
-        settingMenu.SetActive(true);
+        mainMenu.SetActive(!mainMenu.activeInHierarchy);
+        settingMenu.SetActive(!settingMenu.activeInHierarchy);
     }
 
     public void ExitGame()
@@ -24,9 +35,33 @@ public class UIManager : MonoBehaviour
         Application.Quit();
     }
 
+    public void PauseMenu()
+    {
+        isPause = !isPause;
+        mainMenu.SetActive(!mainMenu.activeInHierarchy);
+        pauseMenu.SetActive(!pauseMenu.activeInHierarchy);
+    }
+
+    public void SettingMenuOnPause()
+    {
+        pauseMenu.SetActive(!pauseMenu.activeInHierarchy);
+        settingMenu.SetActive(!settingMenu.activeInHierarchy);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     public void BackMainMenu()
     {
-        settingMenu.SetActive(false);
-        mainMenu.SetActive(true);
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void ReplaceChessMenu()
+    {
+        replaceChessMenu.SetActive(!replaceChessMenu.activeInHierarchy);
+        mainMenu.SetActive(!mainMenu.activeInHierarchy);
+        isPause = !isPause;
     }
 }

@@ -7,15 +7,17 @@ public class PlayerCamera : MonoBehaviour
     [Header ("Set in inspector")]
     public GameObject whitePlayerCamera;
     public GameObject blackPlayerCamera;
-    private Vector3 startRotationWhitePlayerCamera;
-    private Vector3 startRotationBlackPlayerCamera;
+    public Canvas canvas;
 
     [Header("Set Dynamic")]
-    public static bool isWait = false;
+    public static bool isWait;
+    private Vector3 startRotationWhitePlayerCamera;
+    private Vector3 startRotationBlackPlayerCamera;
 
     // Start is called before the first frame update
     void Start()
     {
+        isWait = false;
         startRotationWhitePlayerCamera = whitePlayerCamera.transform.localEulerAngles;
         startRotationBlackPlayerCamera = blackPlayerCamera.transform.localEulerAngles;
         whitePlayerCamera.SetActive(true);
@@ -28,13 +30,14 @@ public class PlayerCamera : MonoBehaviour
         blackPlayerCamera.SetActive(!blackPlayerCamera.activeInHierarchy);
         whitePlayerCamera.transform.localEulerAngles = startRotationWhitePlayerCamera;
         blackPlayerCamera.transform.localEulerAngles = startRotationBlackPlayerCamera;
+        canvas.worldCamera = Camera.main;
     }
 
     private IEnumerator Wait()
     {
         while(true)
         {
-            if(ChessBoard.isMoveChess)
+            if(ChessBoard.isMoveChess || UIManager.isPause)
             {
                 yield return null;
             }else

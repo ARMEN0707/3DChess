@@ -19,9 +19,8 @@ public struct Cell
 public abstract class Chess : MonoBehaviour
 {
     [Header ("Set in inspector")]
-    public float speed = 1.0f;   
+    public float speed;   
     public bool isWhite;
-
 
     [Header("Set Dynamic")]
     public bool isMove;
@@ -35,7 +34,7 @@ public abstract class Chess : MonoBehaviour
 
     //проверяет наличие фигуры на данной клетке
     public Chess FindChess(int x, int y, int offsetX, int offsetY) => 
-        ChessBoard.chessInBoard.Find(chess => chess.currentX == (x + offsetX * dir) && chess.currentY == (y + offsetY * dir));
+        ChessBoard.chessOnBoard.Find(chess => chess.currentX == (x + offsetX * dir) && chess.currentY == (y + offsetY * dir));
 
     //находится ли точка на доске
     public bool PointInBoard(int x, int y, int offsetX, int offsetY) => 
