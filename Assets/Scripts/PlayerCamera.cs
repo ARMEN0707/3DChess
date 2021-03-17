@@ -8,10 +8,11 @@ public class PlayerCamera : MonoBehaviour
     public GameObject whitePlayerCamera;
     public GameObject blackPlayerCamera;
     public Canvas canvas;
+    public float timeWait; // время ожидания после хода
 
     [Header("Set Dynamic")]
     public static bool isWait;
-    private Vector3 startRotationWhitePlayerCamera;
+    private Vector3 startRotationWhitePlayerCamera; 
     private Vector3 startRotationBlackPlayerCamera;
 
     // Start is called before the first frame update
@@ -24,7 +25,7 @@ public class PlayerCamera : MonoBehaviour
         blackPlayerCamera.SetActive(false);
     }
 
-    private void SwapCamera()
+    public void SwapCamera()
     {
         whitePlayerCamera.SetActive(!whitePlayerCamera.activeInHierarchy);
         blackPlayerCamera.SetActive(!blackPlayerCamera.activeInHierarchy);
@@ -45,7 +46,7 @@ public class PlayerCamera : MonoBehaviour
                 break;
             }             
         }
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(timeWait);
         SwapCamera();
         isWait = false;
         yield return null;

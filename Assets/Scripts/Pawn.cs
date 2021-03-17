@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pawn : Chess
 {
-    private bool isFirstMove = true;    
+    public bool isFirstMove = true;    
 
     public override List<Cell> GetPointForMove(int x, int y)
     {

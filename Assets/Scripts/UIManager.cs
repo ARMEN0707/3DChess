@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,13 +10,14 @@ public class UIManager : MonoBehaviour
     public GameObject settingMenu;
     public GameObject pauseMenu;
     public GameObject replaceChessMenu;
+    public GameObject winMenu;
+    public Text textWin;
 
     public static bool isPause;
 
     private void Awake()
     {
         isPause = false;
-        ChessBoard.eventReplaceChess += ReplaceChessMenu; 
     }
 
 
@@ -59,9 +61,19 @@ public class UIManager : MonoBehaviour
     }
 
     public void ReplaceChessMenu()
-    {
+    {        
         replaceChessMenu.SetActive(!replaceChessMenu.activeInHierarchy);
         mainMenu.SetActive(!mainMenu.activeInHierarchy);
         isPause = !isPause;
+    }
+
+    public void WinMenu(bool isWhiteWin)
+    {
+        if (!isWhiteWin)
+        {
+            textWin.text = "BLACK WIN!";
+        }
+        mainMenu.SetActive(false);
+        winMenu.SetActive(true);
     }
 }

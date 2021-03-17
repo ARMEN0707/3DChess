@@ -42,12 +42,6 @@ public class King : Chess
         
     }
 
-    //public bool checkmate()
-    //{
-        
-    //    return false;
-    //}
-
     // Start is called before the first frame update
     void Start()
     {
@@ -58,12 +52,5 @@ public class King : Chess
     void Update()
     {
         MoveChess(point);
-        //if(ChessBoard.isMoveChess)
-        //{
-        //    if(checkmate())
-        //    {
-        //        Debug.Log("Checkmate");
-        //    }
-        //}
     }
 }

@@ -30,6 +30,7 @@ public abstract class Chess : MonoBehaviour
     //для направления движения
     public int dir;
 
+    //получить все возможные ходы
     public abstract List<Cell> GetPointForMove(int x, int y);
 
     //проверяет наличие фигуры на данной клетке
@@ -52,6 +53,15 @@ public abstract class Chess : MonoBehaviour
         }
     }
 
+    //ход назад
+    public void MoveBack(Vector3 point,int x, int y)
+    {
+        transform.position = point;
+        currentX = x;
+        currentY = y;
+    }
+
+    //перемещение шахмат
     public void MoveChess(Vector3 position)
     {
         if (isMove)

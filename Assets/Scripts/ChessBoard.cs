@@ -2,34 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+public struct ChessMove
+{
+    public int startX;
+    public int startY;
+    public int endX;
+    public int endY;
+    public bool isAttack;
+}
 
 
 public class ChessBoard : MonoBehaviour
 {
     [Header("Set in Inspector")]
-    public GameObject CellForMove;
-    public GameObject CellForAttack;
-    public GameObject SelectedCell;
-    public Vector3 startPosition;
-    public float cellSize;
-    public List<GameObject> listChessPrefabs;
+    public GameObject CellForMove; //
+    public GameObject CellForAttack;// ячейки для ходов
+    public GameObject SelectedCell;//
+    public Vector3 startPosition; // позиция доски
+    public float cellSize; // размер одной клетки доски
+    public List<GameObject> listChessPrefabs; 
     public AnimationCurve curve;
-    public GameObject PlaceDeadChessBlack;
-    public GameObject PlaceDeadChessWhite;
+    public GameObject PlaceDeadChessBlack;// позиция для уничтоженных шахмат
+    public GameObject PlaceDeadChessWhite;//
     public AudioSource soundChess;
+    public UIManager uiManager;
 
     [Header ("Set Dynamic")]
     public GameObject activeChess = null;
-    public static bool isMoveChess = false;
+    public static bool isMoveChess;
     public float halfSizeBoard;
-    public static List<Chess> chessOnBoard;
+    public static List<Chess> chessOnBoard; // шахматы которые находятся на доске
     public bool isWhitePlayer = true;
     public int numberInactiveBlack = 0;
     public int numberInactiveWhite = 0;
-    public delegate void ReplaceChess();
-    public static event ReplaceChess eventReplaceChess;
-
+    public Stack<ChessMove> listChessMove; // список всех ходом 
+    public Stack<Chess> listInactiveChess; // список уничтоженных шахмат
     private RaycastHit hit;
 
     private void SpawnChess(int index, int x, int y)
@@ -151,6 +158,17 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
+    //задает координаты движения шахматам
+    private void SetPointMoveForChess(Chess chessScript,int x, int y)
+    {
+        chessScript.point = GetPosition(x, y);
+        chessScript.currentX = x;
+        chessScript.currentY = y;
+        chessScript.isMove = true;
+        isMoveChess = true;
+    }
+
+    //проверяет находится ли пешка на 8 или 1 линии
     private bool CheckLastLine(Chess chessScript,int y)
     {
         if(chessScript.isWhite && y == 7)
@@ -164,6 +182,7 @@ public class ChessBoard : MonoBehaviour
         return false;
     }
 
+    //перемещение шахматы за тереторию доски
     private IEnumerator ClearChess(GameObject go)
     {
         float currentTime = 0;
@@ -226,6 +245,7 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
+    //ожидание конца движения шахмат
     private IEnumerator EndMoveChess(bool isLastLine)
     {
         while (true)
@@ -239,8 +259,9 @@ public class ChessBoard : MonoBehaviour
                 soundChess.Play();
                 if (activeChess.tag == "Pawn" && isLastLine)
                 {
-                    eventReplaceChess.Invoke();
-                }else
+                    uiManager.ReplaceChessMenu();
+                }
+                else
                 {
                     activeChess = null;
                 }
@@ -249,6 +270,7 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
+    //заменяет пешку на другую шахмату
     public void ReplacePawn(string name)
     {
         Chess chessScript = activeChess.GetComponent<Chess>();     
@@ -265,55 +287,82 @@ public class ChessBoard : MonoBehaviour
         Chess newChessScript = go.GetComponent<Chess>();
         newChessScript.currentX = chessScript.currentX;
         newChessScript.currentY = chessScript.currentY;
-        eventReplaceChess.Invoke();
+        uiManager.ReplaceChessMenu();
         activeChess = null;
     }
 
-    private void Awake()
+    //отменяет два предыдущих хода
+    public void BackStep()
     {
-        isMoveChess = false;
-        chessOnBoard = new List<Chess>();
-        eventReplaceChess = null;
+        if (!isMoveChess && !PlayerCamera.isWait)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (listChessMove.Count != 0)
+                {
+                    ChessMove chessMove = listChessMove.Pop();
+                    Chess chessScript = chessOnBoard.Find(chess => chess.currentX == chessMove.endX && chess.currentY == chessMove.endY);
+                    Vector3 position = GetPosition(chessMove.startX, chessMove.startY);
+                    chessScript.MoveBack(position, chessMove.startX, chessMove.startY);
+                    if (chessScript.tag == "Pawn")
+                    {
+                        Pawn pawnScript = chessScript as Pawn;
+                        if ((pawnScript.isWhite && pawnScript.currentY == 1) || (!pawnScript.isWhite && pawnScript.currentY == 6))
+                        {
+                            pawnScript.isFirstMove = true;
+                        }
+                    }
+                    if (chessMove.isAttack)
+                    {
+                        Chess chessInactive = listInactiveChess.Pop();
+                        chessInactive.gameObject.GetComponent<BoxCollider>().enabled = true;
+                        Vector3 pos = GetPosition(chessMove.endX, chessMove.endY);
+                        chessInactive.MoveBack(pos, chessMove.endX, chessMove.endY);
+                        chessOnBoard.Add(chessInactive);
+                    }
+                }
+                else
+                {
+                    isWhitePlayer = true;
+                    GameObject.Find("CameraManager").GetComponent<PlayerCamera>().SwapCamera();
+                }
+            }
+        }
     }
 
     void Start()
     {
+        isMoveChess = false;
+        chessOnBoard = new List<Chess>();
+        listChessMove = new Stack<ChessMove>();
+        listInactiveChess = new Stack<Chess>();
         halfSizeBoard = -4 * cellSize;
         transform.position = startPosition;
         SpawnAllChess();
     }
 
     void Update()
-    {
-        GameObject chess = DetectionChess();
-        //выбор объекта
-        if(chess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait && !UIManager.isPause)
-        {           
-            Chess chessScript = chess.GetComponent<Chess>();
-            if(isWhitePlayer == chessScript.isWhite)
-            {
-                int x, y;
-                GetIndexCell(chess.transform.position, out x, out y);
-                DrawCellForMove(chessScript.GetPointForMove(x, y));
-                DrawSelectedCell(x, y);
-                activeChess = chess;
-            }
-        }
-
+    {     
         //если есть выбранная фигура, то переместить если существует возможнсть хода
         if(activeChess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait)
         {           
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //если во что-то попали 
             if(Physics.Raycast(ray,out hit, 50.0f))
-            {
-                int x, y;                    
+            {                
+                ChessMove chessMove = new ChessMove();
                 Chess chessScript = activeChess.GetComponent<Chess>();
                 GameObject goHit = hit.collider.gameObject;
-                GetIndexCell(activeChess.transform.position, out x, out y);
+                //GetIndexCell(activeChess.transform.position, out x, out y);
+                int x = chessScript.currentX;
+                int y = chessScript.currentY;
+                chessMove.startX = x;
+                chessMove.startY = y;
                 List<Cell> points = chessScript.GetPointForMove(x,y);
                 if (points == null)
                     return;
-                GetIndexCell(hit.point, out x, out y);                    
+                GetIndexCell(hit.point, out x, out y); 
+                //если попали в точку куда возможен ход
                 if (points.Exists(p => p.x == x && p.y == y))
                 { 
                     //если на данной клетке есть чужая шахмата
@@ -321,24 +370,40 @@ public class ChessBoard : MonoBehaviour
                     {
                         //Destroy(hit.collider.gameObject,1.0f); 
                         Chess chessDead = goHit.GetComponent<Chess>();
+                        listInactiveChess.Push(chessDead);
                         chessOnBoard.Remove(chessDead);
                         hit.collider.enabled = false;
                         if(goHit.tag == "King")
                         {
+                            uiManager.WinMenu(chessScript.isWhite);
                             Debug.Log("End");
                         }
+                        chessMove.isAttack = true;
                         StartCoroutine(ClearChess(goHit));
                     }
-                    StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y)));                    
-                    chessScript.point = GetPosition(x, y); ;
-                    chessScript.isMove = true;
-                    chessScript.currentX = x;
-                    chessScript.currentY = y;
-                    isMoveChess = true;
-                    isWhitePlayer = !isWhitePlayer;                   
+                    chessMove.endX = x;
+                    chessMove.endY = y;
+                    SetPointMoveForChess(chessScript, x, y);
+                    StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y)));
+                    isWhitePlayer = !isWhitePlayer;
+                    listChessMove.Push(chessMove);
                     ClearCell();
-                }                    
+                }
             }           
+        }
+                GameObject chess = DetectionChess();
+        //выбор объекта
+        if (chess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait && !UIManager.isPause)
+        {
+            Chess chessScript = chess.GetComponent<Chess>();
+            if (isWhitePlayer == chessScript.isWhite)
+            {
+                int x, y;
+                GetIndexCell(chess.transform.position, out x, out y);
+                DrawCellForMove(chessScript.GetPointForMove(x, y));
+                DrawSelectedCell(x, y);
+                activeChess = chess;
+            }
         }
     }
 }
