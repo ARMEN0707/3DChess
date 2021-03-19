@@ -2,20 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Cell
-{
-    public int x;
-    public int y;
-    public bool isCellForMove;
-
-    public Cell(int x,int y,bool isCellForMove)
-    {
-        this.x = x;
-        this.y = y;
-        this.isCellForMove = isCellForMove;
-    }
-}
-
 public abstract class Chess : MonoBehaviour
 {
     [Header ("Set in inspector")]
@@ -62,7 +48,7 @@ public abstract class Chess : MonoBehaviour
     }
 
     //перемещение шахмат
-    public void MoveChess(Vector3 position)
+    public bool MoveChess(Vector3 position)
     {
         if (isMove)
         {
@@ -71,7 +57,9 @@ public abstract class Chess : MonoBehaviour
             {
                 isMove = false;
                 ChessBoard.isMoveChess = false;
+                return true;
             }
         }
+        return false;
     }
 }

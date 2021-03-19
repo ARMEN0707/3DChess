@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Pawn : Chess
 {
+    public bool isTakingOnPass = false;
     public bool isFirstMove = true;    
 
     public override List<Cell> GetPointForMove(int x, int y)
@@ -20,6 +21,18 @@ public class Pawn : Chess
         }else
         {
             GetPointForMove(points, x, y, 0, 1);
+        }
+
+        if(isTakingOnPass)
+        {
+            if(FindChess(currentX,currentY,1,0) is Pawn)
+            {
+                points.Add(new Cell(x + 1 * dir, y + 1 * dir, false));
+            }
+            if (FindChess(currentX, currentY, -1, 0) is Pawn)
+            {
+                points.Add(new Cell(x -1 * dir, y + 1 * dir, false));
+            }            
         }
 
         //атака
@@ -53,6 +66,23 @@ public class Pawn : Chess
         }        
     }
 
+    private void SetTakingOfPass(Chess chess)
+    {
+        if(chess is Pawn && chess.isWhite != isWhite)
+        {
+            Pawn pawn = chess as Pawn;
+            pawn.isTakingOnPass = true;
+        }
+    }
+
+    private void CheckAdjacentCell()
+    {
+        Chess chessRight = FindChess(currentX, currentY, 1, 0);
+        Chess chessLeft = FindChess(currentX, currentY, -1, 0);
+        SetTakingOfPass(chessRight);
+        SetTakingOfPass(chessLeft);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,11 +92,16 @@ public class Pawn : Chess
     // Update is called once per frame
     void Update()
     {
-        if (isFirstMove && isMove)
+
+        if (MoveChess(point) && isFirstMove)
         {
+            CheckAdjacentCell();
             isFirstMove = false;
         }
-        MoveChess(point);
+        if((isTakingOnPass && isMove) || (isTakingOnPass && !isMove && ChessBoard.isMoveChess))
+        {
+            isTakingOnPass = false;
+        }
     }
 
 

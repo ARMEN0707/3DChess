@@ -11,6 +11,20 @@ public struct ChessMove
     public bool isAttack;
 }
 
+public struct Cell
+{
+    public int x;
+    public int y;
+    public bool isCellForMove;
+
+    public Cell(int x, int y, bool isCellForMove)
+    {
+        this.x = x;
+        this.y = y;
+        this.isCellForMove = isCellForMove;
+    }
+}
+
 
 public class ChessBoard : MonoBehaviour
 {
@@ -279,7 +293,7 @@ public class ChessBoard : MonoBehaviour
         {
             color = "Black";
         }
-        GameObject prefab = listChessPrefabs.Find(chess => chess.tag == (name + color));
+        GameObject prefab = listChessPrefabs.Find(chess => chess.name == (name + color));
         Destroy(activeChess);
         GameObject go = Instantiate(prefab, GetPosition(chessScript.currentX, chessScript.currentY), Quaternion.identity);
         go.transform.SetParent(transform);
@@ -288,6 +302,8 @@ public class ChessBoard : MonoBehaviour
         newChessScript.currentX = chessScript.currentX;
         newChessScript.currentY = chessScript.currentY;
         uiManager.ReplaceChessMenu();
+        chessOnBoard.Remove(chessScript);
+        chessOnBoard.Add(newChessScript);
         activeChess = null;
     }
 
@@ -316,8 +332,8 @@ public class ChessBoard : MonoBehaviour
                     {
                         Chess chessInactive = listInactiveChess.Pop();
                         chessInactive.gameObject.GetComponent<BoxCollider>().enabled = true;
-                        Vector3 pos = GetPosition(chessMove.endX, chessMove.endY);
-                        chessInactive.MoveBack(pos, chessMove.endX, chessMove.endY);
+                        Vector3 pos = GetPosition(chessInactive.currentX, chessInactive.currentY);
+                        chessInactive.MoveBack(pos, chessInactive.currentX, chessInactive.currentY);
                         chessOnBoard.Add(chessInactive);
                     }
                 }
@@ -361,7 +377,7 @@ public class ChessBoard : MonoBehaviour
                 List<Cell> points = chessScript.GetPointForMove(x,y);
                 if (points == null)
                     return;
-                GetIndexCell(hit.point, out x, out y); 
+                GetIndexCell(hit.point, out x, out y);               
                 //если попали в точку куда возможен ход
                 if (points.Exists(p => p.x == x && p.y == y))
                 { 
@@ -385,13 +401,27 @@ public class ChessBoard : MonoBehaviour
                     chessMove.endY = y;
                     SetPointMoveForChess(chessScript, x, y);
                     StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y)));
+                    //взятие на проходе
+                    if (chessScript is Pawn && points.Exists(p => p.x == x && p.y == y && p.isCellForMove == false))
+                    {
+                        Pawn pawn = chessScript as Pawn;
+                        if (pawn.isTakingOnPass)
+                        {
+                            Chess adjacentChess = chessScript.FindChess(x, y, 0, -1);
+                            listInactiveChess.Push(adjacentChess);
+                            chessOnBoard.Remove(adjacentChess);
+                            adjacentChess.gameObject.GetComponent<BoxCollider>().enabled = false;
+                            chessMove.isAttack = true;
+                            StartCoroutine(ClearChess(adjacentChess.gameObject));
+                        }                        
+                    }
                     isWhitePlayer = !isWhitePlayer;
                     listChessMove.Push(chessMove);
                     ClearCell();
                 }
             }           
         }
-                GameObject chess = DetectionChess();
+        GameObject chess = DetectionChess();
         //выбор объекта
         if (chess != null && Input.GetMouseButtonUp(0) && !isMoveChess && !PlayerCamera.isWait && !UIManager.isPause)
         {
