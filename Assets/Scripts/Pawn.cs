@@ -23,17 +23,27 @@ public class Pawn : Chess
             GetPointForMove(points, x, y, 0, 1);
         }
 
-        if(isTakingOnPass)
+        //if(isTakingOnPass)
+        //{
+        Pawn pawn = FindChess(currentX, currentY, 1, 0) as Pawn;
+        if(pawn != null && pawn.isTakingOnPass)
         {
-            if(FindChess(currentX,currentY,1,0) is Pawn)
-            {
-                points.Add(new Cell(x + 1 * dir, y + 1 * dir, false));
-            }
-            if (FindChess(currentX, currentY, -1, 0) is Pawn)
-            {
-                points.Add(new Cell(x -1 * dir, y + 1 * dir, false));
-            }            
+            points.Add(new Cell(x + 1 * dir, y + 1 * dir, false));
         }
+        pawn = FindChess(currentX, currentY, -1, 0) as Pawn;
+        if (pawn != null && pawn.isTakingOnPass)
+        {
+            points.Add(new Cell(x - 1 * dir, y + 1 * dir, false));
+        }
+            //if(FindChess(currentX,currentY,1,0) is Pawn)
+            //{
+            //    points.Add(new Cell(x + 1 * dir, y + 1 * dir, false));
+            //}
+            //if (FindChess(currentX, currentY, -1, 0) is Pawn)
+            //{
+            //    points.Add(new Cell(x -1 * dir, y + 1 * dir, false));
+            //}            
+        //}
 
         //атака
         GetPointForAttack(points, x, y, 1, 1);
@@ -66,21 +76,33 @@ public class Pawn : Chess
         }        
     }
 
-    private void SetTakingOfPass(Chess chess)
-    {
-        if(chess is Pawn && chess.isWhite != isWhite)
-        {
-            Pawn pawn = chess as Pawn;
-            pawn.isTakingOnPass = true;
-        }
-    }
+    //private void SetTakingOfPass(Chess chess)
+    //{
+    //    if(chess is Pawn && chess.isWhite != isWhite)
+    //    {
+    //        Pawn pawn = chess as Pawn;
+    //        pawn.isTakingOnPass = true;
+    //    }
+    //}
 
     private void CheckAdjacentCell()
     {
-        Chess chessRight = FindChess(currentX, currentY, 1, 0);
-        Chess chessLeft = FindChess(currentX, currentY, -1, 0);
-        SetTakingOfPass(chessRight);
-        SetTakingOfPass(chessLeft);
+        int y;
+        if(isWhite)
+        {
+            y = 3;
+        }else
+        {
+            y = 4;
+        }
+        Chess chessRight = FindChess(currentX, y, 1, 0);
+        Chess chessLeft = FindChess(currentX, y, -1, 0);
+        if((chessRight != null || chessLeft != null))
+        {
+            isTakingOnPass = true;
+        }
+        //SetTakingOfPass(chessRight);
+        //SetTakingOfPass(chessLeft);
     }
 
     // Start is called before the first frame update
@@ -98,7 +120,7 @@ public class Pawn : Chess
             CheckAdjacentCell();
             isFirstMove = false;
         }
-        if((isTakingOnPass && isMove) || (isTakingOnPass && !isMove && ChessBoard.isMoveChess))
+        if(isTakingOnPass && !isMove && ChessBoard.isMoveChess)
         {
             isTakingOnPass = false;
         }

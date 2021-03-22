@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Rock : Chess
 {
+    public bool isFirstMove = true;
+
     public override List<Cell> GetPointForMove(int x, int y)
     {
         List<Cell> points = new List<Cell>();
@@ -56,6 +58,10 @@ public class Rock : Chess
     // Update is called once per frame
     void Update()
     {
+        if(isFirstMove && isMove)
+        {
+            isFirstMove = false;
+        }
         MoveChess(point);
     }
 }

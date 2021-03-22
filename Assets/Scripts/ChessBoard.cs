@@ -196,6 +196,23 @@ public class ChessBoard : MonoBehaviour
         return false;
     }
 
+    private void CheckKing(List<Cell> points)
+    {
+        foreach(Chess ch in chessOnBoard)
+        {
+            if(ch.isWhite != isWhitePlayer && ch.tag != "King")
+            {
+                List<Cell> moves = ch.GetPointForMove(ch.currentX, ch.currentY);
+                King king = chessOnBoard.Find(k => k.tag == "King") as King;
+                if(moves.Exists(move => move.x == king.currentX && move.y == king.currentY && !move.isCellForMove))
+                {
+                    king.underAttack = true;
+                }
+
+            }
+        } 
+    }
+
     //перемещение шахматы за тереторию доски
     private IEnumerator ClearChess(GameObject go)
     {
@@ -205,9 +222,15 @@ public class ChessBoard : MonoBehaviour
         if(isWhitePlayer)
         {
             endPoint = PlaceDeadChessBlack.transform.position;
+            endPoint.z += cellSize * (numberInactiveBlack % 8);
+            if (numberInactiveBlack > 7)
+                endPoint.x += cellSize;
         }else
         {
             endPoint = PlaceDeadChessWhite.transform.position;
+            endPoint.z -= cellSize * (numberInactiveWhite % 8);
+            if (numberInactiveWhite > 7)
+                endPoint.x -= cellSize;
         }
         while (true)
         {
@@ -224,33 +247,11 @@ public class ChessBoard : MonoBehaviour
                 //то значения которые тут используются пртивоположны
                 if(!isWhitePlayer)
                 {
-                    if (numberInactiveBlack == 7)
-                    {
-                        endPoint.x += cellSize;
-                        endPoint.z -= cellSize * 7;
-                        numberInactiveBlack = 1;
-                    }
-                    else
-                    {
-                        endPoint.z += cellSize;
-                        numberInactiveBlack++;
-                    }
-                    PlaceDeadChessBlack.transform.position = endPoint;
+                    numberInactiveBlack++;
                 }
                 else
                 {
-                    if (numberInactiveWhite == 7)
-                    {
-                        endPoint.x -= cellSize;
-                        endPoint.z += cellSize * 7;
-                        numberInactiveWhite = 1;
-                    }
-                    else
-                    {
-                        endPoint.z -= cellSize;
-                        numberInactiveWhite++;
-                    }
-                    PlaceDeadChessWhite.transform.position = endPoint;
+                    numberInactiveWhite++;
                 }
                 break;
             }
@@ -260,7 +261,7 @@ public class ChessBoard : MonoBehaviour
     }
 
     //ожидание конца движения шахмат
-    private IEnumerator EndMoveChess(bool isLastLine)
+    private IEnumerator EndMoveChess(bool isLastLine, Chess chessScript)
     {
         while (true)
         {
@@ -277,6 +278,9 @@ public class ChessBoard : MonoBehaviour
                 }
                 else
                 {
+                    //находится ли король под атакой
+                    List<Cell> points = chessScript.GetPointForMove(chessScript.currentX, chessScript.currentY);
+                    CheckKing(points);
                     activeChess = null;
                 }
                 yield break;
@@ -331,6 +335,13 @@ public class ChessBoard : MonoBehaviour
                     if (chessMove.isAttack)
                     {
                         Chess chessInactive = listInactiveChess.Pop();
+                        if(chessInactive.isWhite)
+                        {
+                            numberInactiveWhite--;
+                        }else
+                        {
+                            numberInactiveBlack--;
+                        }
                         chessInactive.gameObject.GetComponent<BoxCollider>().enabled = true;
                         Vector3 pos = GetPosition(chessInactive.currentX, chessInactive.currentY);
                         chessInactive.MoveBack(pos, chessInactive.currentX, chessInactive.currentY);
@@ -343,6 +354,23 @@ public class ChessBoard : MonoBehaviour
                     GameObject.Find("CameraManager").GetComponent<PlayerCamera>().SwapCamera();
                 }
             }
+        }
+    }
+
+    private void Castling(Chess chessScript)
+    {
+        Rock rockRight = chessOnBoard.Find(chess => 
+            chess.currentX == chessScript.currentX + 1 && chess.currentY == chessScript.currentY) as Rock;
+        Rock rockLeft = chessOnBoard.Find(chess =>
+            chess.currentX == chessScript.currentX - 2 && chess.currentY == chessScript.currentY) as Rock;
+
+        if (rockRight != null)
+        {
+            SetPointMoveForChess(rockRight, rockRight.currentX - 2, rockRight.currentY);
+        }
+        if (rockLeft != null)
+        {
+            SetPointMoveForChess(rockLeft, rockLeft.currentX + 3, rockLeft.currentY);
         }
     }
 
@@ -369,7 +397,6 @@ public class ChessBoard : MonoBehaviour
                 ChessMove chessMove = new ChessMove();
                 Chess chessScript = activeChess.GetComponent<Chess>();
                 GameObject goHit = hit.collider.gameObject;
-                //GetIndexCell(activeChess.transform.position, out x, out y);
                 int x = chessScript.currentX;
                 int y = chessScript.currentY;
                 chessMove.startX = x;
@@ -380,40 +407,46 @@ public class ChessBoard : MonoBehaviour
                 GetIndexCell(hit.point, out x, out y);               
                 //если попали в точку куда возможен ход
                 if (points.Exists(p => p.x == x && p.y == y))
-                { 
+                {                     
                     //если на данной клетке есть чужая шахмата
                     if(goHit.layer == LayerMask.NameToLayer("Chess"))
                     {
-                        //Destroy(hit.collider.gameObject,1.0f); 
                         Chess chessDead = goHit.GetComponent<Chess>();
                         listInactiveChess.Push(chessDead);
                         chessOnBoard.Remove(chessDead);
                         hit.collider.enabled = false;
-                        if(goHit.tag == "King")
-                        {
-                            uiManager.WinMenu(chessScript.isWhite);
-                            Debug.Log("End");
-                        }
+                        //if(goHit.tag == "King")
+                        //{
+                        //    uiManager.WinMenu(chessScript.isWhite);
+                        //    Debug.Log("End");
+                        //}
                         chessMove.isAttack = true;
                         StartCoroutine(ClearChess(goHit));
                     }
                     chessMove.endX = x;
                     chessMove.endY = y;
                     SetPointMoveForChess(chessScript, x, y);
-                    StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y)));
+                    StartCoroutine(EndMoveChess(CheckLastLine(chessScript, y), chessScript));
                     //взятие на проходе
                     if (chessScript is Pawn && points.Exists(p => p.x == x && p.y == y && p.isCellForMove == false))
                     {
-                        Pawn pawn = chessScript as Pawn;
-                        if (pawn.isTakingOnPass)
+                        Pawn adjacentChess = chessScript.FindChess(x, y, 0, -1) as Pawn;
+                        if(adjacentChess != null && adjacentChess.isTakingOnPass)
                         {
-                            Chess adjacentChess = chessScript.FindChess(x, y, 0, -1);
                             listInactiveChess.Push(adjacentChess);
                             chessOnBoard.Remove(adjacentChess);
                             adjacentChess.gameObject.GetComponent<BoxCollider>().enabled = false;
                             chessMove.isAttack = true;
                             StartCoroutine(ClearChess(adjacentChess.gameObject));
-                        }                        
+                        }                      
+                    }
+                    //рокировка
+                    if (chessScript.tag == "King")
+                    {
+                        if (Mathf.Abs((chessMove.startX - chessMove.endX) / 2) == 1)
+                        {
+                            Castling(chessScript);
+                        }
                     }
                     isWhitePlayer = !isWhitePlayer;
                     listChessMove.Push(chessMove);
