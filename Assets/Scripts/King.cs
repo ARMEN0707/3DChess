@@ -20,6 +20,7 @@ public class King : Chess
         GetPoint(points,x,y,-1,0);
         GetPoint(points,x,y,-1,1);
 
+        //рокировка
         if(isFirstMove && !underAttack)
         {
             GetPointForCastling(points, x, y, true);
@@ -49,6 +50,7 @@ public class King : Chess
         }        
     }
 
+    //рокировка
     private void GetPointForCastling(List<Cell> points, int x, int y, bool right)
     {
         int d;
@@ -62,9 +64,10 @@ public class King : Chess
         if (!isWhite)
             d *= -1;
 
+        //пересечение или ход на поле которое могут атакавать
         foreach(Chess ch in ChessBoard.chessOnBoard)
         {
-            if(ch.isWhite != isWhite && ch.tag != "King")
+            if(ch.isWhite != isWhite && !(ch is King))
             {
                 List<Cell> moves = ch.GetPointForMove(ch.currentX, ch.currentY);
                 if(moves.Exists(cell => 
@@ -76,6 +79,7 @@ public class King : Chess
             }
         }
 
+        //нет ли препядствий
         Chess chess = FindChess(x, y, 1 * d, 0);
         if (chess == null)
         {
@@ -107,10 +111,10 @@ public class King : Chess
     // Update is called once per frame
     void Update()
     {
-        if(underAttack && ChessBoard.isMoveChess)
-        {
-            underAttack = false;
-        }
+        //if(underAttack && ChessBoard.isMoveChess)
+        //{
+        //    underAttack = false;
+        //}
         if (isFirstMove && isMove)
         {
             isFirstMove = false;

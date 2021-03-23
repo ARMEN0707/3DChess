@@ -60,7 +60,7 @@ public class Queen : Chess
 
     private void GetPointInDirDiagonal(List<Cell> points, int x, int y, int offsetX, int offsetY)
     {
-        for (int i = 1; ; i++)
+        for (int i = 1;; i++)
         {
             if (PointInBoard(x, y, i * offsetX, i * offsetY))
             {                

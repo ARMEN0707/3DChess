@@ -23,8 +23,7 @@ public class Pawn : Chess
             GetPointForMove(points, x, y, 0, 1);
         }
 
-        //if(isTakingOnPass)
-        //{
+        //взятие на проходе
         Pawn pawn = FindChess(currentX, currentY, 1, 0) as Pawn;
         if(pawn != null && pawn.isTakingOnPass)
         {
@@ -35,15 +34,6 @@ public class Pawn : Chess
         {
             points.Add(new Cell(x - 1 * dir, y + 1 * dir, false));
         }
-            //if(FindChess(currentX,currentY,1,0) is Pawn)
-            //{
-            //    points.Add(new Cell(x + 1 * dir, y + 1 * dir, false));
-            //}
-            //if (FindChess(currentX, currentY, -1, 0) is Pawn)
-            //{
-            //    points.Add(new Cell(x -1 * dir, y + 1 * dir, false));
-            //}            
-        //}
 
         //атака
         GetPointForAttack(points, x, y, 1, 1);
@@ -76,15 +66,7 @@ public class Pawn : Chess
         }        
     }
 
-    //private void SetTakingOfPass(Chess chess)
-    //{
-    //    if(chess is Pawn && chess.isWhite != isWhite)
-    //    {
-    //        Pawn pawn = chess as Pawn;
-    //        pawn.isTakingOnPass = true;
-    //    }
-    //}
-
+    //обнаружение соседних пешок 
     private void CheckAdjacentCell()
     {
         int y;
@@ -95,14 +77,12 @@ public class Pawn : Chess
         {
             y = 4;
         }
-        Chess chessRight = FindChess(currentX, y, 1, 0);
-        Chess chessLeft = FindChess(currentX, y, -1, 0);
+        Pawn chessRight = FindChess(currentX, y, 1, 0) as Pawn;
+        Pawn chessLeft = FindChess(currentX, y, -1, 0) as Pawn;
         if((chessRight != null || chessLeft != null))
         {
             isTakingOnPass = true;
         }
-        //SetTakingOfPass(chessRight);
-        //SetTakingOfPass(chessLeft);
     }
 
     // Start is called before the first frame update
