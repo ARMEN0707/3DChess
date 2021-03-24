@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum typeMove
@@ -51,7 +52,8 @@ public class ChessBoard : MonoBehaviour
     public UIManager uiManager;
 
     [Header("Set Dynamic")]
-    public static bool checkmate = false;
+    public bool checkmate = false;
+    public bool pat = false;
     public GameObject activeChess = null;
     public static bool isMoveChess;
     public float halfSizeBoard;
@@ -95,7 +97,7 @@ public class ChessBoard : MonoBehaviour
     {
         //White
         //Pawn
-        for(int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             SpawnChess(0, i, 1);
         }
@@ -229,26 +231,52 @@ public class ChessBoard : MonoBehaviour
         }
         return false;
     }
-    //проверка на мат
-    private void CheckCheckmate()
+    //проверка конца игры
+    private void CheckEndGame()
     {
+        King[] arrayKing = FindObjectsOfType<King>();
+        //выбираем одинаковые ходы у королей
+        var result = arrayKing[0].GetPointForMove(arrayKing[0].currentX, arrayKing[0].currentY).Intersect(
+            arrayKing[1].GetPointForMove(arrayKing[1].currentX, arrayKing[1].currentY)
+            ).ToArray();
         if (!CheckKing())
         {
-            foreach (King k in FindObjectsOfType<King>())
+            foreach (King k in arrayKing)
             {
                 k.underAttack = false;
             }
-        }
-        else
+        }       
+                  
+        foreach (King k in arrayKing)
         {
-            foreach (King k in FindObjectsOfType<King>())
+            List<Cell> moves = k.GetPointForMove(k.currentX, k.currentY);
+            //вычитаем одинаковые ходы
+            result = moves.Except(result).ToArray();
+            //если у короля нет хода и он под шахом
+            if (result.Length == 0 && k.underAttack == true)
             {
-                if (k.GetPointForMove(k.currentX, k.currentY).Count == 0 && k.underAttack == true)
+                checkmate = true;
+                isWhitePlayer = !k.isWhite;
+                return;
+            }                    
+            if(result.Length == 0 && k.occupiedCell)
+            {
+                foreach(Chess chess in chessOnBoard)
                 {
-                    checkmate = true;
-                    isWhitePlayer = !k.isWhite;
+                    if(chess.isWhite == k.isWhite && !(chess is King))
+                    {
+                        if(chess.GetPointForMove(chess.currentX, chess.currentY).Count != 0)
+                        {
+                            return;
+                        }
+                    }
                 }
+                pat = true;
             }
+        }
+        if(chessOnBoard.Count == 2 && chessOnBoard[0] is King && chessOnBoard[1] is King)
+        {
+            pat = true;
         }
     }
 
@@ -317,10 +345,14 @@ public class ChessBoard : MonoBehaviour
                 }
                 else
                 {
-                    CheckCheckmate();
+                    CheckEndGame();
                     if (checkmate)
                     {
                         uiManager.WinMenu(isWhitePlayer);
+                    }
+                    if(pat)
+                    {
+                        uiManager.DrawMenu();
                     }
                     activeChess = null;
                 }
@@ -415,7 +447,7 @@ public class ChessBoard : MonoBehaviour
                     GameObject.Find("CameraManager").GetComponent<PlayerCamera>().SwapCamera();
                 }
             }
-            CheckCheckmate();
+            CheckEndGame();
             ClearCell();
         }
     }

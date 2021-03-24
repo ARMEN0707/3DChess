@@ -6,6 +6,7 @@ public class King : Chess
 {
     public bool isFirstMove = true;
     public bool underAttack = false;
+    public bool occupiedCell = false;
 
     public override List<Cell> GetPointForMove(int x, int y)
     {
@@ -46,9 +47,7 @@ public class King : Chess
             {
                 if(isWhite != chess.isWhite)
                 {
-                    Cell cell = new Cell(x + dir * offsetX, y + dir * offsetY, false);
-                    if (CheckCellOnAttack(cell))
-                        points.Add(cell);
+                    points.Add(new Cell(x + dir * offsetX, y + dir * offsetY, false));
                 }
             }
         }        
@@ -72,6 +71,7 @@ public class King : Chess
                 }
                 if (moves.Exists(move => move.x == cell.x && move.y == cell.y))
                 {
+                    occupiedCell = true;
                     return false;
                 }
             }
@@ -140,10 +140,10 @@ public class King : Chess
     // Update is called once per frame
     void Update()
     {
-        //if(underAttack && ChessBoard.isMoveChess)
-        //{
-        //    underAttack = false;
-        //}
+        if(occupiedCell && isMove)
+        {
+            occupiedCell = false;
+        }
         if (isFirstMove && isMove)
         {
             isFirstMove = false;

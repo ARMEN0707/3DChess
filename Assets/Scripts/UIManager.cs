@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject replaceChessMenu;
     public GameObject winMenu;
+    public GameObject drawMenu;
     public Text textWin;
 
     public static bool isPause;
@@ -75,5 +76,10 @@ public class UIManager : MonoBehaviour
         }
         mainMenu.SetActive(false);
         winMenu.SetActive(true);
+    }
+    public void DrawMenu()
+    {        
+        mainMenu.SetActive(false);
+        drawMenu.SetActive(true);
     }
 }

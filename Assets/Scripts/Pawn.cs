@@ -16,7 +16,9 @@ public class Pawn : Chess
         {
             for(int j = 1; j <= 2; j++)
             {
-                GetPoint(points, x, y, 0, j);                
+                GetPoint(points, x, y, 0, j);
+                if (points.Count == 0)
+                    break;
             }
         }else
         {
@@ -51,7 +53,7 @@ public class Pawn : Chess
             {
                 points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, true));
             }
-        }        
+        }       
     }
 
     private void GetPointForAttack(List<Cell> points, int x, int y, int offsetX, int offsetY)
