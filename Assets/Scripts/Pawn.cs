@@ -16,11 +16,11 @@ public class Pawn : Chess
         {
             for(int j = 1; j <= 2; j++)
             {
-                GetPointForMove(points, x, y, 0, j);                
+                GetPoint(points, x, y, 0, j);                
             }
         }else
         {
-            GetPointForMove(points, x, y, 0, 1);
+            GetPoint(points, x, y, 0, 1);
         }
 
         //взятие на проходе
@@ -42,7 +42,7 @@ public class Pawn : Chess
         return points;
     }
 
-    private void GetPointForMove(List<Cell> points,int x,int y, int offsetX,int offsetY)
+    public void GetPoint(List<Cell> points,int x,int y, int offsetX,int offsetY)
     {
         Chess chess = FindChess(x, y, offsetX, offsetY);
         if (chess == null)

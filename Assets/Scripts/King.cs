@@ -38,16 +38,45 @@ public class King : Chess
             Chess chess = FindChess(x, y, offsetX, offsetY);
             if (chess == null)
             {
-                points.Add(new Cell(x + dir * offsetX, y + dir * offsetY, true));
+                Cell cell = new Cell(x + dir * offsetX, y + dir * offsetY, true);
+                if(CheckCellOnAttack(cell))
+                    points.Add(cell);
             }
             else
             {
                 if(isWhite != chess.isWhite)
                 {
-                    points.Add(new Cell(x + dir * offsetX, y + dir * offsetY, false));
+                    Cell cell = new Cell(x + dir * offsetX, y + dir * offsetY, false);
+                    if (CheckCellOnAttack(cell))
+                        points.Add(cell);
                 }
             }
         }        
+    }
+
+    private bool CheckCellOnAttack(Cell cell)
+    {
+        List<Cell> moves = new List<Cell>();
+        foreach (Chess ch in ChessBoard.chessOnBoard)
+        {
+            if (ch.isWhite != isWhite && !(ch is King))
+            {
+                if (!(ch is Pawn))
+                {
+                    moves = ch.GetPointForMove(ch.currentX, ch.currentY);                    
+                }else
+                {
+                    Pawn pawn = ch as Pawn;
+                    pawn.GetPoint(moves, pawn.currentX, pawn.currentY, 1, 1);
+                    pawn.GetPoint(moves, pawn.currentX, pawn.currentY, -1, 1);
+                }
+                if (moves.Exists(move => move.x == cell.x && move.y == cell.y))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     //рокировка

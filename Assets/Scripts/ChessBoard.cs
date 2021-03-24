@@ -217,10 +217,10 @@ public class ChessBoard : MonoBehaviour
                 King king = chessOnBoard.Find(k => k.tag == "King" && k.isWhite != ch.isWhite) as King;
                 if (moves.Exists(move => move.x == king.currentX && move.y == king.currentY && !move.isCellForMove))
                 {
-                    if (king.GetPointForMove(king.currentX, king.currentY) == null 
-                        || activeChess.tag == "King" || king.underAttack)
+                    if (activeChess.tag == "King" || king.underAttack)
                     {
                         checkmate = true;
+                        isWhitePlayer = !king.isWhite;
                     }
                     king.underAttack = true;
                     return true;
@@ -228,6 +228,28 @@ public class ChessBoard : MonoBehaviour
             }
         }
         return false;
+    }
+    //проверка на мат
+    private void CheckCheckmate()
+    {
+        if (!CheckKing())
+        {
+            foreach (King k in FindObjectsOfType<King>())
+            {
+                k.underAttack = false;
+            }
+        }
+        else
+        {
+            foreach (King k in FindObjectsOfType<King>())
+            {
+                if (k.GetPointForMove(k.currentX, k.currentY).Count == 0 && k.underAttack == true)
+                {
+                    checkmate = true;
+                    isWhitePlayer = !k.isWhite;
+                }
+            }
+        }
     }
 
     //перемещение шахматы за тереторию доски
@@ -294,15 +316,8 @@ public class ChessBoard : MonoBehaviour
                     uiManager.ReplaceChessMenu();
                 }
                 else
-                {                    
-                    //находится ли король под атакой
-                    if(!CheckKing())
-                    {
-                        foreach(King k in FindObjectsOfType<King>())
-                        {
-                            k.underAttack = false;
-                        }
-                    }
+                {
+                    CheckCheckmate();
                     if (checkmate)
                     {
                         uiManager.WinMenu(isWhitePlayer);
@@ -400,13 +415,7 @@ public class ChessBoard : MonoBehaviour
                     GameObject.Find("CameraManager").GetComponent<PlayerCamera>().SwapCamera();
                 }
             }
-            if (!CheckKing())
-            {
-                foreach (King k in FindObjectsOfType<King>())
-                {
-                    k.underAttack = false;
-                }
-            }
+            CheckCheckmate();
             ClearCell();
         }
     }
