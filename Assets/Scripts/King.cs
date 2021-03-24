@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class King : Chess
@@ -26,7 +27,7 @@ public class King : Chess
         {
             GetPointForCastling(points, x, y, true);
             GetPointForCastling(points, x, y, false);
-        }
+        }        
 
         Debug.Log("King");
         return points;
@@ -51,6 +52,15 @@ public class King : Chess
                 }
             }
         }        
+    }
+
+    //исключает ход на короля
+    public List<Cell> Except(List<Cell> points)
+    {
+        King king = ChessBoard.chessOnBoard.Find(chess => (chess is King) && chess.isWhite != isWhite)as King;
+        var result = points.Intersect(king.GetPointForMove(king.currentX, king.currentY)).ToArray();
+        points = points.Except(result).ToList();
+        return points;
     }
 
     private bool CheckCellOnAttack(Cell cell)
@@ -93,20 +103,11 @@ public class King : Chess
         if (!isWhite)
             d *= -1;
 
-        //пересечение или ход на поле которое могут атакавать
-        foreach(Chess ch in ChessBoard.chessOnBoard)
-        {
-            if(ch.isWhite != isWhite && !(ch is King))
-            {
-                List<Cell> moves = ch.GetPointForMove(ch.currentX, ch.currentY);
-                if(moves.Exists(cell => 
-                    ((cell.x == currentX + 1 * d * dir) || (cell.x == currentX + 2 * d * dir)) && 
-                    cell.y == currentY))
-                {
-                    return;
-                }
-            }
-        }
+        CheckCellOnAttack(new Cell(currentX + 1 * d * dir, currentY, true));
+        CheckCellOnAttack(new Cell(currentX + 2 * d * dir, currentY, true));
+
+        if (occupiedCell)
+            return;
 
         //нет ли препядствий
         Chess chess = FindChess(x, y, 1 * d, 0);

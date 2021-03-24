@@ -95,43 +95,43 @@ public class ChessBoard : MonoBehaviour
 
     private void SpawnAllChess()
     {
-        //White
-        //Pawn
-        for (int i = 0; i < 8; i++)
-        {
-            SpawnChess(0, i, 1);
-        }
-        //Rock
-        SpawnChess(1, 0, 0);
-        SpawnChess(1, 7, 0);
-        //Knight
-        SpawnChess(2, 1, 0);
-        SpawnChess(2, 6, 0);
-        //Bishop
-        SpawnChess(3, 2, 0);
-        SpawnChess(3, 5, 0);
-        //Queen
-        SpawnChess(4, 3, 0);
+        ////White
+        ////Pawn
+        //for (int i = 0; i < 8; i++)
+        //{
+        //    SpawnChess(0, i, 1);
+        //}
+        ////Rock
+        //SpawnChess(1, 0, 0);
+        //SpawnChess(1, 7, 0);
+        ////Knight
+        //SpawnChess(2, 1, 0);
+        //SpawnChess(2, 6, 0);
+        ////Bishop
+        //SpawnChess(3, 2, 0);
+        //SpawnChess(3, 5, 0);
+        ////Queen
+        //SpawnChess(4, 3, 0);
         //King
         SpawnChess(5, 4, 0);
 
-        //Black
-        //Pawn
-        for (int i = 0; i < 8; i++)
-        {
-            SpawnChess(6, i, 6);
-        }
-        //Rock
-        SpawnChess(7, 0, 7);
-        SpawnChess(7, 7, 7);
-        //Knight
-        SpawnChess(8, 1, 7);
-        SpawnChess(8, 6, 7);
-        //Bishop
-        SpawnChess(9, 2, 7);
-        SpawnChess(9, 5, 7);
-        //Queen
-        SpawnChess(10, 3, 7);
+        ////Black
+        ////Pawn
+        //for (int i = 0; i < 8; i++)
+        //{
+        //    SpawnChess(6, i, 6);
+        //}
+        ////Rock
+        //SpawnChess(7, 0, 7);
+        //SpawnChess(7, 7, 7);
+        ////Knight
+        //SpawnChess(8, 1, 7);
+        //SpawnChess(8, 6, 7);
+        ////Bishop
+        //SpawnChess(9, 2, 7);
+        //SpawnChess(9, 5, 7);
+        ////Queen
+        //SpawnChess(10, 3, 7);
         //King
         SpawnChess(11, 4, 7);
     }
@@ -235,14 +235,11 @@ public class ChessBoard : MonoBehaviour
     private void CheckEndGame()
     {
         King[] arrayKing = FindObjectsOfType<King>();
-        //выбираем одинаковые ходы у королей
-        var result = arrayKing[0].GetPointForMove(arrayKing[0].currentX, arrayKing[0].currentY).Intersect(
-            arrayKing[1].GetPointForMove(arrayKing[1].currentX, arrayKing[1].currentY)
-            ).ToArray();
         if (!CheckKing())
         {
             foreach (King k in arrayKing)
             {
+                k.occupiedCell = false;
                 k.underAttack = false;
             }
         }       
@@ -251,15 +248,15 @@ public class ChessBoard : MonoBehaviour
         {
             List<Cell> moves = k.GetPointForMove(k.currentX, k.currentY);
             //вычитаем одинаковые ходы
-            result = moves.Except(result).ToArray();
+            k.Except(moves);
             //если у короля нет хода и он под шахом
-            if (result.Length == 0 && k.underAttack == true)
+            if (moves.Count == 0 && k.underAttack == true)
             {
                 checkmate = true;
                 isWhitePlayer = !k.isWhite;
                 return;
             }                    
-            if(result.Length == 0 && k.occupiedCell)
+            if(moves.Count == 0 && k.occupiedCell)
             {
                 foreach(Chess chess in chessOnBoard)
                 {
@@ -274,7 +271,7 @@ public class ChessBoard : MonoBehaviour
                 pat = true;
             }
         }
-        if(chessOnBoard.Count == 2 && chessOnBoard[0] is King && chessOnBoard[1] is King)
+        if (chessOnBoard.Count == 2 && chessOnBoard[0] is King && chessOnBoard[1] is King)
         {
             pat = true;
         }
@@ -512,6 +509,11 @@ public class ChessBoard : MonoBehaviour
                 chessMove.startX = x;
                 chessMove.startY = y;
                 List<Cell> points = chessScript.GetPointForMove(x,y);
+                if (chessScript is King)
+                {
+                    King king = chessScript as King;
+                    points = king.Except(points);
+                }
                 if (points == null)
                     return;
                 GetIndexCell(hit.point, out x, out y);               
@@ -569,7 +571,13 @@ public class ChessBoard : MonoBehaviour
             {
                 int x, y;
                 GetIndexCell(chess.transform.position, out x, out y);
-                DrawCellForMove(chessScript.GetPointForMove(x, y));
+                List<Cell> points = chessScript.GetPointForMove(x, y);
+                if(chessScript is King)
+                {
+                    King king = chessScript as King;
+                    points = king.Except(points);
+                }
+                DrawCellForMove(points);
                 DrawSelectedCell(x, y);
                 activeChess = chess;
             }
