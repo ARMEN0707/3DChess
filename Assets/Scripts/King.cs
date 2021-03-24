@@ -103,10 +103,9 @@ public class King : Chess
         if (!isWhite)
             d *= -1;
 
-        CheckCellOnAttack(new Cell(currentX + 1 * d * dir, currentY, true));
-        CheckCellOnAttack(new Cell(currentX + 2 * d * dir, currentY, true));
-
-        if (occupiedCell)
+        if (!CheckCellOnAttack(new Cell(currentX + 1 * d * dir, currentY, true)))
+            return;
+        if (!CheckCellOnAttack(new Cell(currentX + 2 * d * dir, currentY, true)))
             return;
 
         //нет ли препядствий
@@ -116,13 +115,17 @@ public class King : Chess
             chess = FindChess(x, y, 2 * d, 0);
             if(chess == null)
             {
-                Rock rock;
+                Rock rock = null;
                 if (right)
                 {
                     rock = FindChess(x, y, 3 * d, 0) as Rock;
                 }else
                 {
-                    rock = FindChess(x, y, 4 * d, 0) as Rock;
+                    chess = FindChess(x, y, 3 * d, 0);
+                    if (chess == null)
+                    {
+                        rock = FindChess(x, y, 4 * d, 0) as Rock;
+                    }
                 }
                 if(rock != null && rock.isFirstMove)
                 {

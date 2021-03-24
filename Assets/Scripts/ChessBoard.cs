@@ -95,43 +95,43 @@ public class ChessBoard : MonoBehaviour
 
     private void SpawnAllChess()
     {
-        ////White
-        ////Pawn
-        //for (int i = 0; i < 8; i++)
-        //{
-        //    SpawnChess(0, i, 1);
-        //}
-        ////Rock
-        //SpawnChess(1, 0, 0);
-        //SpawnChess(1, 7, 0);
-        ////Knight
-        //SpawnChess(2, 1, 0);
-        //SpawnChess(2, 6, 0);
-        ////Bishop
-        //SpawnChess(3, 2, 0);
-        //SpawnChess(3, 5, 0);
-        ////Queen
-        //SpawnChess(4, 3, 0);
+        //White
+        //Pawn
+        for (int i = 0; i < 8; i++)
+        {
+            SpawnChess(0, i, 1);
+        }
+        //Rock
+        SpawnChess(1, 0, 0);
+        SpawnChess(1, 7, 0);
+        //Knight
+        SpawnChess(2, 1, 0);
+        SpawnChess(2, 6, 0);
+        //Bishop
+        SpawnChess(3, 2, 0);
+        SpawnChess(3, 5, 0);
+        //Queen
+        SpawnChess(4, 3, 0);
         //King
         SpawnChess(5, 4, 0);
 
-        ////Black
-        ////Pawn
-        //for (int i = 0; i < 8; i++)
-        //{
-        //    SpawnChess(6, i, 6);
-        //}
-        ////Rock
-        //SpawnChess(7, 0, 7);
-        //SpawnChess(7, 7, 7);
-        ////Knight
-        //SpawnChess(8, 1, 7);
-        //SpawnChess(8, 6, 7);
-        ////Bishop
-        //SpawnChess(9, 2, 7);
-        //SpawnChess(9, 5, 7);
-        ////Queen
-        //SpawnChess(10, 3, 7);
+        //Black
+        //Pawn
+        for (int i = 0; i < 8; i++)
+        {
+            SpawnChess(6, i, 6);
+        }
+        //Rock
+        SpawnChess(7, 0, 7);
+        SpawnChess(7, 7, 7);
+        //Knight
+        SpawnChess(8, 1, 7);
+        SpawnChess(8, 6, 7);
+        //Bishop
+        SpawnChess(9, 2, 7);
+        SpawnChess(9, 5, 7);
+        //Queen
+        SpawnChess(10, 3, 7);
         //King
         SpawnChess(11, 4, 7);
     }
@@ -469,10 +469,10 @@ public class ChessBoard : MonoBehaviour
         }
         if (rockLeft != null)
         {
-            move.startX = rockRight.currentX;
-            move.startY = rockRight.currentY;
-            move.endX = rockRight.currentX + 3;
-            move.endY = rockRight.currentY;
+            move.startX = rockLeft.currentX;
+            move.startY = rockLeft.currentY;
+            move.endX = rockLeft.currentX + 3;
+            move.endY = rockLeft.currentY;
             SetPointMoveForChess(rockLeft, rockLeft.currentX + 3, rockLeft.currentY);
         }
         move.type = typeMove.move;
