@@ -54,6 +54,9 @@ public class ChessBoard : MonoBehaviour
     [Header("Set Dynamic")]
     public bool checkmate = false;
     public bool pat = false;
+    //шахмата которая держит короля под шахом
+    public Chess chessOccupiedKing;
+    public Chess chessOccupiedKingBlack;
     public GameObject activeChess = null;
     public static bool isMoveChess;
     public float halfSizeBoard;
@@ -225,6 +228,13 @@ public class ChessBoard : MonoBehaviour
                         isWhitePlayer = !king.isWhite;
                     }
                     king.underAttack = true;
+                    if (king.isWhite)
+                    {
+                        chessOccupiedKing = ch;
+                    }else
+                    {
+                        chessOccupiedKingBlack = ch;
+                    }
                     return true;
                 }
             }
@@ -239,6 +249,8 @@ public class ChessBoard : MonoBehaviour
         {
             foreach (King k in arrayKing)
             {
+                chessOccupiedKing = null;
+                chessOccupiedKingBlack = null;
                 k.occupiedCell = false;
                 k.underAttack = false;
             }
@@ -480,6 +492,43 @@ public class ChessBoard : MonoBehaviour
         listChessMove.Push(move);
     }
 
+    private List<Cell> ExceptPoint(Chess chessScript, List<Cell> points)
+    {
+        if (chessScript is King)
+        {
+            King king = chessScript as King;
+            points = king.Except(points);
+        }
+        else 
+        {
+            List<Cell> moves = new List<Cell>();
+            Chess tempChess = null;
+            if (chessOccupiedKing != null && isWhitePlayer)
+            {
+                tempChess = chessOccupiedKing;
+            }
+            if (chessOccupiedKingBlack != null && !isWhitePlayer)
+            {
+                tempChess = chessOccupiedKingBlack;
+            }
+            if (tempChess != null)
+            {
+                if (tempChess is Pawn)
+                {
+                    Pawn pawn = tempChess as Pawn;
+                    pawn.GetPointForAttack(moves, pawn.currentX, pawn.currentY, 1, 1);
+                    pawn.GetPointForAttack(moves, pawn.currentX, pawn.currentY, -1, 1);
+                }
+                else
+                {
+                    moves = tempChess.GetPointForMove(tempChess.currentX, tempChess.currentY);
+                }
+                points = moves.Intersect(points).ToList();
+            }
+        }
+        return points;
+    }
+
     void Start()
     {
         checkmate = false;
@@ -510,11 +559,7 @@ public class ChessBoard : MonoBehaviour
                 chessMove.startX = x;
                 chessMove.startY = y;
                 List<Cell> points = chessScript.GetPointForMove(x,y);
-                if (chessScript is King)
-                {
-                    King king = chessScript as King;
-                    points = king.Except(points);
-                }
+                points = ExceptPoint(chessScript, points);
                 if (points == null)
                     return;
                 GetIndexCell(hit.point, out x, out y);               
@@ -573,11 +618,7 @@ public class ChessBoard : MonoBehaviour
                 int x, y;
                 GetIndexCell(chess.transform.position, out x, out y);
                 List<Cell> points = chessScript.GetPointForMove(x, y);
-                if(chessScript is King)
-                {
-                    King king = chessScript as King;
-                    points = king.Except(points);
-                }
+                points = ExceptPoint(chessScript, points);
                 DrawCellForMove(points);
                 DrawSelectedCell(x, y);
                 activeChess = chess;

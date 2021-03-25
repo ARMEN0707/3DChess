@@ -66,7 +66,7 @@ public class Pawn : Chess
         }       
     }
 
-    private void GetPointForAttack(List<Cell> points, int x, int y, int offsetX, int offsetY)
+    public void GetPointForAttack(List<Cell> points, int x, int y, int offsetX, int offsetY)
     {
         Chess chess = FindChess(x, y, offsetX, offsetY);
         if (chess != null)
