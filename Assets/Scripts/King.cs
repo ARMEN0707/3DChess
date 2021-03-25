@@ -33,6 +33,12 @@ public class King : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        return null;
+    }
+
+
     private void GetPoint(List<Cell> points, int x, int y,int offsetX,int offsetY)
     {
         if (PointInBoard(x, y, offsetX, offsetY))
@@ -58,8 +64,22 @@ public class King : Chess
     public List<Cell> Except(List<Cell> points)
     {
         King king = ChessBoard.chessOnBoard.Find(chess => (chess is King) && chess.isWhite != isWhite)as King;
-        var result = points.Intersect(king.GetPointForMove(king.currentX, king.currentY)).ToArray();
+        var result = points.Intersect(king.GetPointForMove(king.currentX, king.currentY)).ToList();
         points = points.Except(result).ToList();
+
+        if (underAttack)
+        {
+            foreach (Chess chess in ChessBoard.chessOnBoard)
+            {
+                if (chess.isWhite != isWhite && !(chess is King))
+                {
+                    List<Cell> occupiedMoves = chess.GetOccupiedPointForMove();
+                    result = points.Intersect(occupiedMoves).ToList();
+                    points = points.Except(result).ToList();
+                }
+            }
+        }
+
         return points;
     }
 

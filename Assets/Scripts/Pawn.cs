@@ -44,6 +44,16 @@ public class Pawn : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        List<Cell> points = new List<Cell>();
+
+        GetOccupiedPointForAttack(points, 1, 1);
+        GetOccupiedPointForAttack(points, -1, 1);
+
+        return points;
+    }
+
     public void GetPoint(List<Cell> points,int x,int y, int offsetX,int offsetY)
     {
         Chess chess = FindChess(x, y, offsetX, offsetY);
@@ -66,6 +76,17 @@ public class Pawn : Chess
                 points.Add(new Cell(x + offsetX * dir, y + offsetY * dir, false));
             }
         }        
+    }
+    private void GetOccupiedPointForAttack(List<Cell> points, int offsetX, int offsetY)
+    {
+        Chess chess = FindChess(currentX, currentY, offsetX, offsetY);
+        if (chess != null)
+        {
+            if (isWhite == chess.isWhite)
+            {
+                points.Add(new Cell(currentX + offsetX * dir, currentY + offsetY * dir, false));
+            }
+        }
     }
 
     //обнаружение соседних пешок 

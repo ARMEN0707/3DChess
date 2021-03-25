@@ -18,6 +18,8 @@ public abstract class Chess : MonoBehaviour
 
     //получить все возможные ходы
     public abstract List<Cell> GetPointForMove(int x, int y);
+    //получить точки хода которые заняты своими шахматами
+    public abstract List<Cell> GetOccupiedPointForMove();
 
     //проверяет наличие фигуры на данной клетке
     public Chess FindChess(int x, int y, int offsetX, int offsetY) => 

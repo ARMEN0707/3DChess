@@ -21,6 +21,22 @@ public class Bishop : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        List<Cell> points = new List<Cell>();
+
+        //право вверх
+        GetOccupiedPointInDirDiagonal(points, 1, 1);
+        //право вниз
+        GetOccupiedPointInDirDiagonal(points, 1, -1);
+        //лево вверх
+        GetOccupiedPointInDirDiagonal(points, -1, 1);
+        //лево вниз
+        GetOccupiedPointInDirDiagonal(points, -1, -1);
+
+        return points;
+    }
+
     private void GetPointInDirDiagonal(List<Cell> points, int x, int y, int offsetX,int offsetY)
     {
         for (int i = 1; ; i++)
@@ -37,6 +53,29 @@ public class Bishop : Chess
                     if (isWhite != chess.isWhite)
                     {
                         points.Add(new Cell(x + i * dir * offsetX, y + i * dir * offsetY, false));
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    private void GetOccupiedPointInDirDiagonal(List<Cell> points, int offsetX, int offsetY)
+    {
+        for (int i = 1; ; i++)
+        {
+            if (PointInBoard(currentX, currentY, i * offsetX, i * offsetY))
+            {
+                Chess chess = FindChess(currentX, currentY, i * offsetX, i * offsetY);
+                if (chess != null)
+                {
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + i * dir * offsetX, currentY + i * dir * offsetY, false));
                     }
                     break;
                 }

@@ -248,9 +248,10 @@ public class ChessBoard : MonoBehaviour
         {
             List<Cell> moves = k.GetPointForMove(k.currentX, k.currentY);
             //вычитаем одинаковые ходы
-            k.Except(moves);
+            moves = k.Except(moves);
+
             //если у короля нет хода и он под шахом
-            if (moves.Count == 0 && k.underAttack == true)
+            if (moves.Count == 0 && k.underAttack)
             {
                 checkmate = true;
                 isWhitePlayer = !k.isWhite;
@@ -269,9 +270,9 @@ public class ChessBoard : MonoBehaviour
                     }
                 }
                 pat = true;
-            }
+            }            
         }
-        if (chessOnBoard.Count == 2 && chessOnBoard[0] is King && chessOnBoard[1] is King)
+        if (chessOnBoard.Count == 2 && (chessOnBoard[0] is King) && (chessOnBoard[1] is King))
         {
             pat = true;
         }

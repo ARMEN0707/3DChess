@@ -23,6 +23,22 @@ public class Rock : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        List<Cell> points = new List<Cell>();
+
+        //вправо
+        GetOccupiedPointInDir(points, 1, 0);
+        //влево
+        GetOccupiedPointInDir(points, -1, 0);
+        //верх
+        GetOccupiedPointInDir(points, 0, 1);
+        //вниз
+        GetOccupiedPointInDir(points, 0, -1);
+
+        return points;
+    }
+
     private void GetPointInDir(List<Cell> points,int x, int y,int offsetX, int offsetY)
     {
         for (int i = 1; i <= 8; i++)
@@ -43,6 +59,29 @@ public class Rock : Chess
                     break;
                 }
             }else
+            {
+                break;
+            }
+        }
+    }
+
+    private void GetOccupiedPointInDir(List<Cell> points, int offsetX, int offsetY)
+    {
+        for (int i = 1; i <= 8; i++)
+        {
+            if (PointInBoard(currentX, currentY, i * offsetX, i * offsetY))
+            {
+                Chess chess = FindChess(currentX, currentY, i * offsetX, i * offsetY);
+                if (chess != null)
+                {                   
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + i * dir * offsetX, currentY + i * dir * offsetY, false));
+                    }
+                    break;
+                }
+            }
+            else
             {
                 break;
             }

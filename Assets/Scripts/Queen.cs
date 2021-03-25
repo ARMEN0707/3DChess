@@ -31,6 +31,30 @@ public class Queen : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        List<Cell> points = new List<Cell>();
+
+        //вправо
+        GetOccupiedPointInDir(points, 1, 0);
+        //влево
+        GetOccupiedPointInDir(points, -1, 0);
+        //верх
+        GetOccupiedPointInDir(points, 0, 1);
+        //вниз
+        GetOccupiedPointInDir(points, 0, -1);
+
+        //право вверх
+        GetOccupiedPointInDirDiagonal(points, 1, 1);
+        //право вниз
+        GetOccupiedPointInDirDiagonal(points, 1, -1);
+        //лево вверх
+        GetOccupiedPointInDirDiagonal(points, -1, 1);
+        //лево вниз
+        GetOccupiedPointInDirDiagonal(points, -1, -1);
+        return points;
+    }
+
     private void GetPointInDir(List<Cell> points, int x, int y, int offsetX, int offsetY)
     {
         for (int i = 1; i <= 8; i++)
@@ -58,6 +82,29 @@ public class Queen : Chess
         }
     }
 
+    private void GetOccupiedPointInDir(List<Cell> points, int offsetX, int offsetY)
+    {
+        for (int i = 1; i <= 8; i++)
+        {
+            if (PointInBoard(currentX, currentY, i * offsetX, i * offsetY))
+            {
+                Chess chess = FindChess(currentX, currentY, i * offsetX, i * offsetY);
+                if (chess != null)
+                {
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + i * dir * offsetX, currentY + i * dir * offsetY, false));
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
     private void GetPointInDirDiagonal(List<Cell> points, int x, int y, int offsetX, int offsetY)
     {
         for (int i = 1;; i++)
@@ -73,6 +120,29 @@ public class Queen : Chess
                     if(isWhite != chess.isWhite)
                     {
                         points.Add(new Cell(x + i * dir * offsetX, y + i * dir * offsetY, false));
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    private void GetOccupiedPointInDirDiagonal(List<Cell> points, int offsetX, int offsetY)
+    {
+        for (int i = 1; ; i++)
+        {
+            if (PointInBoard(currentX, currentY, i * offsetX, i * offsetY))
+            {
+                Chess chess = FindChess(currentX, currentY, i * offsetX, i * offsetY);
+                if (chess != null)
+                {
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + i * dir * offsetX, currentY + i * dir * offsetY, false));
                     }
                     break;
                 }

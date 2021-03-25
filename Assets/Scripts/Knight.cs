@@ -63,6 +63,58 @@ public class Knight : Chess
         return points;
     }
 
+    public override List<Cell> GetOccupiedPointForMove()
+    {
+        List<Cell> points = new List<Cell>();
+
+        //горизонталь
+        int offsetX = 2, offsetY = 1;
+        Chess chess;
+        for (int i = 1; i <= 4; i++, offsetY = -offsetY)
+        {
+            if (PointInBoard(currentX, currentY, offsetX, offsetY))
+            {
+                chess = FindChess(currentX, currentY, offsetX, offsetY);
+                if (chess != null)                
+                {
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + offsetX * dir, currentY + offsetY * dir, false));
+                    }
+                }
+
+            }
+            if (i == 2)
+            {
+                offsetX = -offsetX;
+            }
+        }
+
+        //вертикаль
+        offsetX = 1; offsetY = 2;
+        for (int i = 1; i <= 4; i++, offsetX = -offsetX)
+        {
+            if (PointInBoard(currentX, currentY, offsetX, offsetY))
+            {
+                chess = FindChess(currentX, currentY, offsetX, offsetY);
+                if (chess != null)
+                {
+                    if (isWhite == chess.isWhite)
+                    {
+                        points.Add(new Cell(currentX + offsetX * dir, currentY + offsetY * dir, false));
+                    }
+                }
+
+            }
+            if (i == 2)
+            {
+                offsetY = -offsetY;
+            }
+        }
+
+        return points;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
